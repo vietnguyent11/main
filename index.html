@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes,maximum-scale=3.0">
 <title>MX Tasks</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
@@ -32,6 +32,7 @@ body{
   -webkit-tap-highlight-color:transparent;
   user-select:none; -webkit-user-select:none;
   overscroll-behavior:contain;
+  touch-action:pan-x pan-y;
 }
 /* ── HEADER ── */
 header{
@@ -111,11 +112,18 @@ header{
 .detail-sub{ font-size:0.8rem; color:var(--muted); font-family:'IBM Plex Mono',monospace; margin-bottom:0.25rem; white-space:normal; }
 .progress-bar{ height:0.3rem; background:var(--border); border-radius:0.3rem; margin:0.6rem 0 0.75rem; overflow:hidden; }
 .progress-fill{ height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:0.3rem; transition:width .3s; }
-.checklist-item{ display:flex; align-items:flex-start; gap:0.6rem; padding:0.5rem 0; border-bottom:1px solid var(--border); font-size:0.9rem; }
+.checklist-item{
+  display:flex; align-items:flex-start; gap:0.6rem; padding:0.5rem 0;
+  border-bottom:1px solid var(--border); font-size:0.9rem;
+}
 .checklist-item:last-child{ border-bottom:none; }
-.checklist-item input[type=checkbox]{ width:1.1rem; height:1.1rem; margin-top:0.15rem; accent-color:var(--accent2); cursor:pointer; flex-shrink:0; }
+.checklist-item input[type=checkbox]{
+  width:1.1rem; height:1.1rem; margin-top:0.15rem;
+  accent-color:var(--accent2); cursor:pointer; flex-shrink:0;
+  pointer-events:auto;
+}
 .checklist-item span{ flex:1; line-height:1.4; }
-.checked-text{ text-decoration:line-through; color:var(--muted); }
+.checked-text{ color:var(--muted); }
 .section-toggle{ background:var(--surface); border:1px solid var(--border); border-radius:0.6rem; margin-top:0.6rem; overflow:hidden; }
 .section-toggle-header{ display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0.8rem; cursor:pointer; font-size:0.8rem; font-weight:600; color:var(--muted); user-select:none; }
 .section-toggle-header:hover{ color:var(--text); }
@@ -174,14 +182,14 @@ header{
   <div class="header-left">
     <button class="nav-btn" id="btnBack" onclick="historyBack()" disabled>◀</button>
   </div>
-  <div style="flex: 1;"></div> <!-- Spacer -->
+  <div style="flex: 1;"></div>
   <button class="btn-add" onclick="goNewTask()">+ Task</button>
   <div style="flex: 1; display: flex; justify-content: center; gap: 6px;">
     <button class="zoom-btn" onclick="zoomOut()">A-</button>
     <button class="zoom-btn" onclick="zoomIn()">A+</button>
     <button class="settings-btn" onclick="openSettings()">⚙️</button>
   </div>
-  <div style="width: 16px;"></div> <!-- Spacer for Fwd button -->
+  <div style="width: 16px;"></div>
   <div class="header-right">
     <button class="nav-btn" id="btnFwd" onclick="historyFwd()" disabled>▶</button>
   </div>
@@ -438,12 +446,13 @@ function renderDetail(taskId){
     </div>`;
   }).join('');
 
-  const matOpen = sectionOpenState[t.id]?.materials || false;
+  // Mặc định mở nếu chưa có trạng thái
+  const matOpen = sectionOpenState[t.id]?.materials !== undefined ? sectionOpenState[t.id].materials : true;
   const matDone = getPrepDone(t.id,'materials',t.materials.length);
   const matRows = t.materials.map((m,idx) => `
     <div class="prep-item">
       <input type="checkbox" ${isPrepChecked(t.id,'materials',idx)?'checked':''} onchange="togglePrep('${t.id}','materials',${idx},this.checked)">
-      <span style="${isPrepChecked(t.id,'materials',idx)?'text-decoration:line-through;color:var(--muted)':''}">${escHtml(m)}</span>
+      <span style="${isPrepChecked(t.id,'materials',idx)?'color:var(--muted)':''}">${escHtml(m)}</span>
     </div>
   `).join('');
   const matSection = t.materials.length ? `<div class="section-toggle">
@@ -454,12 +463,12 @@ function renderDetail(taskId){
       <div class="section-toggle-body${matOpen?' open':''}">${matRows}</div>
     </div>` : '';
 
-  const toolOpen = sectionOpenState[t.id]?.tools || false;
+  const toolOpen = sectionOpenState[t.id]?.tools !== undefined ? sectionOpenState[t.id].tools : true;
   const toolDone = getPrepDone(t.id,'tools',t.tools.length);
   const toolRows = t.tools.map((m,idx) => `
     <div class="prep-item">
       <input type="checkbox" ${isPrepChecked(t.id,'tools',idx)?'checked':''} onchange="togglePrep('${t.id}','tools',${idx},this.checked)">
-      <span style="${isPrepChecked(t.id,'tools',idx)?'text-decoration:line-through;color:var(--muted)':''}">${escHtml(m)}</span>
+      <span style="${isPrepChecked(t.id,'tools',idx)?'color:var(--muted)':''}">${escHtml(m)}</span>
     </div>
   `).join('');
   const toolSection = t.tools.length ? `<div class="section-toggle">
@@ -494,9 +503,12 @@ function renderDetail(taskId){
 function viewPhoto(src){
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:999;display:flex;align-items:center;justify-content:center;cursor:pointer;';
-  overlay.onclick = () => overlay.remove();
+  overlay.onclick = (e) => {
+    if(e.target === overlay) overlay.remove();
+  };
   const img = document.createElement('img');
-  img.src = src; img.style.cssText = 'max-width:95vw;max-height:95vh;border-radius:0.5rem;object-fit:contain;';
+  img.src = src;
+  img.style.cssText = 'max-width:95vw;max-height:95vh;border-radius:0.5rem;object-fit:contain; touch-action:pinch-zoom;';
   overlay.appendChild(img);
   document.body.appendChild(overlay);
 }
