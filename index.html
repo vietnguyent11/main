@@ -1,253 +1,283 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="MX Tasks">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MX Tasks</title>
+
 <style>
-:root {
-  --bg:      #f5f5f4;
-  --bg2:     #ffffff;
-  --bg3:     #ebebea;
-  --border:  #d4d4d3;
-  --border2: #b8b8b6;
-  --text:    #111110;
-  --text2:   #5a5a57;
-  --text3:   #9a9a96;
-  --green:   #1e7a47;
-  --green-bg:#d6f0e2;
-  --red:     #c0392b;
-  --red-bg:  #fde8e6;
-  --blue:    #1a56a0;
-  --radius:  12px;
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bot: env(safe-area-inset-bottom, 0px);
+:root{
+--bg:#f5f5f4;
+--card:#fff;
+--text:#111;
+--border:#ddd;
+--blue:#1a56a0;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, 'Helvetica Neue', sans-serif; overflow: hidden; }
-#app { height: 100%; display: flex; flex-direction: column; }
 
-.hdr { padding: calc(var(–safe-top) + 14px) 16px 14px; background: var(–bg2); border-bottom: 1px solid var(–border); display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.hdr-title { flex: 1; font-size: 18px; font-weight: 700; color: var(–text); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.hdr-sub { font-size: 13px; color: var(–text3); margin-top: 2px; }
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:-apple-system,sans-serif;
+}
 
-.scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(–safe-bot) + 32px); }
+body{
+background:var(--bg);
+color:var(--text);
+}
 
-.btn { cursor: pointer; border: 1px solid var(–border2); background: var(–bg2); color: var(–text); border-radius: 10px; padding: 9px 16px; font-size: 15px; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
-.btn:active { opacity: 0.55; }
-.btn-icon { padding: 8px 12px; }
-.btn-primary { background: var(–text); color: #fff; border-color: var(–text); }
-.btn-danger { background: var(–red-bg); color: var(–red); border-color: #f0b8b3; }
-.btn-sm { padding: 7px 13px; font-size: 14px; }
+header{
+padding:16px;
+background:#fff;
+border-bottom:1px solid var(--border);
+display:flex;
+justify-content:space-between;
+align-items:center;
+position:sticky;
+top:0;
+}
 
-.search-wrap { padding: 12px 16px; background: var(–bg2); border-bottom: 1px solid var(–border); position: relative; }
-.search-input { width: 100%; background: var(–bg3); border: 1px solid var(–border); border-radius: 10px; padding: 12px 14px 12px 40px; font-size: 16px; font-family: inherit; color: var(–text); outline: none; }
-.search-input::placeholder { color: var(–text3); }
-.search-icon { position: absolute; left: 28px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(–text3); }
+button{
+border:none;
+background:var(--blue);
+color:#fff;
+padding:10px 14px;
+border-radius:10px;
+font-size:15px;
+}
 
-.task-list { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-.task-card { background: var(–bg2); border: 1px solid var(–border); border-radius: var(–radius); padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
-.task-card:active { background: var(–bg3); }
-.tc-info { flex: 1; min-width: 0; }
-.tc-name { font-size: 17px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(–text); }
-.tc-meta { font-size: 13px; color: var(–text3); margin-top: 5px; }
-.chevron { font-size: 22px; color: var(–text3); }
+.container{
+padding:16px;
+}
 
-.empty { text-align: center; padding: 60px 24px; color: var(–text3); font-size: 16px; line-height: 2; }
+.card{
+background:var(--card);
+padding:14px;
+border-radius:14px;
+margin-bottom:12px;
+border:1px solid var(--border);
+}
 
-.form-body { padding: 16px; display: flex; flex-direction: column; gap: 18px; }
-.field { display: flex; flex-direction: column; gap: 7px; }
-.label { font-size: 12px; letter-spacing: 0.04em; color: var(–text2); font-weight: 700; text-transform: uppercase; }
-input[type=text], textarea { width: 100%; background: var(–bg2); border: 1px solid var(–border2); border-radius: 10px; padding: 13px 14px; font-size: 16px; font-family: inherit; color: var(–text); outline: none; }
-input[type=text]:focus, textarea:focus { border-color: #888; }
-input[type=text]::placeholder, textarea::placeholder { color: var(–text3); }
-textarea { resize: none; height: 60px; }
+input,textarea{
+width:100%;
+padding:12px;
+margin-top:8px;
+margin-bottom:12px;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:16px;
+}
 
-.section { padding: 0 16px 16px; }
-.sec-hdr { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(–text2); font-weight: 700; padding: 16px 0 10px; border-bottom: 1px solid var(–border); margin-bottom: 10px; }
-.list-items { display: flex; flex-direction: column; gap: 7px; }
-.list-item { display: flex; align-items: center; gap: 10px; background: var(–bg2); border: 1px solid var(–border); border-radius: 10px; padding: 12px 14px; }
-.li-text { flex: 1; font-size: 15px; color: var(–text); }
-.li-num { font-size: 12px; color: var(–text3); min-width: 24px; font-weight: 700; }
-.add-row { display: flex; gap: 8px; margin-top: 9px; }
-.add-row input { flex: 1; }
+.photo{
+width:100%;
+border-radius:10px;
+margin-top:10px;
+}
 
-.tab-bar { display: flex; border-bottom: 1px solid var(–border); background: var(–bg2); flex-shrink: 0; overflow-x: auto; }
-.tab { padding: 13px 14px; font-size: 14px; font-family: inherit; color: var(–text2); border-bottom: 2.5px solid transparent; cursor: pointer; white-space: nowrap; font-weight: 500; }
-.tab.active { color: var(–blue); border-bottom-color: var(–blue); font-weight: 700; }
+.small{
+font-size:13px;
+opacity:.7;
+margin-top:6px;
+}
 
-.prog-wrap { padding: 12px 16px 6px; background: var(–bg2); flex-shrink: 0; border-bottom: 1px solid var(–border); }
-.prog-bar { height: 6px; background: var(–bg3); border-radius: 3px; }
-.prog-fill { height: 6px; background: var(–green); border-radius: 3px; transition: width 0.35s; }
-.prog-text { font-size: 14px; color: var(–text2); text-align: right; margin-top: 5px; font-weight: 600; }
-
-.check-item { display: flex; align-items: flex-start; gap: 14px; padding: 16px; border-bottom: 1px solid var(–border); cursor: pointer; }
-.check-item:active { background: var(–bg3); }
-.chk-box { width: 28px; height: 28px; min-width: 28px; border: 2px solid var(–border2); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
-.chk-box.done { background: var(–green); border-color: var(–green); }
-.chk-num { font-size: 12px; color: var(–text3); margin-bottom: 3px; font-weight: 700; letter-spacing: 0.04em; }
-.chk-text { font-size: 17px; line-height: 1.45; color: var(–text); }
-.chk-text.done { color: var(–text3); text-decoration: line-through; }
-
-.mat-item { display: flex; align-items: center; gap: 14px; padding: 15px 16px; border-bottom: 1px solid var(–border); cursor: pointer; }
-.mat-item:active { background: var(–bg3); }
-.mat-text { flex: 1; font-size: 17px; color: var(–text); }
-.mat-text.done { color: var(–text3); text-decoration: line-through; }
-
-.photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 16px; }
-.photo-thumb { aspect-ratio: 4/3; border-radius: 10px; overflow: hidden; border: 1px solid var(–border); position: relative; cursor: pointer; background: var(–bg3); }
-.photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.photo-del { position: absolute; top: 7px; right: 7px; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,0.55); color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.add-photo-btn { aspect-ratio: 4/3; border-radius: 10px; border: 2px dashed var(–border2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; color: var(–text2); font-size: 14px; font-weight: 600; background: var(–bg2); }
-.add-photo-btn:active { background: var(–bg3); }
-
-.lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.93); z-index: 999; display: flex; align-items: center; justify-content: center; }
-.lightbox img { max-width: 100%; max-height: 88vh; object-fit: contain; border-radius: 6px; }
-.lb-close { position: absolute; top: calc(var(–safe-top) + 16px); right: 16px; font-size: 20px; color: #fff; cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); border-radius: 50%; font-weight: 700; }
-
-.status-done { font-size: 13px; color: var(–green); background: var(–green-bg); border-radius: 8px; padding: 6px 12px; border: 1px solid #a8dfc0; font-weight: 700; white-space: nowrap; }
-
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 998; display: flex; align-items: flex-end; }
-.overlay-sheet { background: var(–bg2); border-radius: 18px 18px 0 0; width: 100%; padding: 22px 20px calc(var(–safe-bot) + 22px); border-top: 1px solid var(–border); }
-.overlay-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(–text); }
-.overlay-sub { font-size: 15px; color: var(–text2); margin-bottom: 22px; line-height: 1.5; }
-.overlay-actions { display: flex; flex-direction: column; gap: 10px; }
-.overlay-actions .btn { justify-content: center; padding: 14px; font-size: 16px; }
-
-.loader { display: flex; align-items: center; justify-content: center; height: 200px; color: var(–text2); font-size: 16px; }
+.hidden{
+display:none;
+}
 </style>
-
 </head>
+
 <body>
-<div id="app"><div class="loader">Đang khởi động...</div></div>
-<input type="file" id="photo-input" accept="image/*" multiple style="display:none">
+
+<header>
+<h3>✈️ MX Tasks</h3>
+<button onclick="newTask()">+ Task</button>
+</header>
+
+<div class="container">
+
+<input id="search" placeholder="Tìm task..." oninput="render()">
+
+<div id="list"></div>
+
+<div id="editor" class="hidden">
+
+<input id="name" placeholder="Tên task">
+
+<input id="aircraft" placeholder="Aircraft">
+
+<textarea id="steps" placeholder="Checklist mỗi dòng 1 bước"></textarea>
+
+<textarea id="materials" placeholder="Vật tư"></textarea>
+
+<textarea id="tools" placeholder="Tools"></textarea>
+
+<input type="file" accept="image/*" capture="environment" id="photo">
+
+<div id="photos"></div>
+
+<button onclick="saveTask()">Lưu task</button>
+
+</div>
+
+</div>
+
 <script>
-let db;
-function openDB() {
-  return new Promise((res,rej) => {
-    const req = indexedDB.open('mx-tasks-v1',1);
-    req.onupgradeneeded = e => {
-      const d = e.target.result;
-      if (!d.objectStoreNames.contains('tasks')) d.createObjectStore('tasks',{keyPath:'id'});
-      if (!d.objectStoreNames.contains('photos')) { const ps=d.createObjectStore('photos',{keyPath:'id'}); ps.createIndex('taskId','taskId',{unique:false}); }
-    };
-    req.onsuccess = e => res(e.target.result);
-    req.onerror = e => rej(e.target.error);
-  });
-}
-const txs = (store,mode='readonly') => db.transaction(store,mode).objectStore(store);
-function dbGetAll(store) { return new Promise((res,rej)=>{ const r=txs(store).getAll(); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
-function dbPut(store,obj) { return new Promise((res,rej)=>{ const r=txs(store,'readwrite').put(obj); r.onsuccess=()=>res(); r.onerror=()=>rej(r.error); }); }
-function dbDel(store,key) { return new Promise((res,rej)=>{ const r=txs(store,'readwrite').delete(key); r.onsuccess=()=>res(); r.onerror=()=>rej(r.error); }); }
-function dbIdx(store,idx,val) { return new Promise((res,rej)=>{ const r=txs(store).index(idx).getAll(val); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
-function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
-function compressImage(file) {
-return new Promise(res => {
-const reader=new FileReader();
-reader.onload=e=>{ const img=new Image(); img.onload=()=>{ const MAX=1200; let w=img.width,h=img.height; if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}} const c=document.createElement(‘canvas’);c.width=w;c.height=h;c.getContext(‘2d’).drawImage(img,0,0,w,h);res(c.toDataURL(‘image/jpeg’,0.78)); }; img.src=e.target.result; };
-reader.readAsDataURL(file);
-});
+let tasks=JSON.parse(localStorage.getItem("mx_tasks")||"[]")
+
+let current=null
+
+function saveDB(){
+localStorage.setItem("mx_tasks",JSON.stringify(tasks))
 }
 
-let S = { view:‘list’, tasks:[], query:’’, editTask:null, runTask:null, runPhotos:[], checks:{}, tab:‘steps’, lightbox:null, deleteConfirm:false };
+function render(){
 
-function esc(s) { return String(s||’’).replace(/&/g,’&’).replace(/</g,’<’).replace(/>/g,’>’).replace(/”/g,’"’); }
-function newTask() { return {id:uid(),name:’’,aircraft:’’,steps:[],materials:[],tools:[],createdAt:Date.now()}; }
-function filtered() { const q=S.query.trim().toLowerCase(); if(!q)return S.tasks; return S.tasks.filter(t=>t.name.toLowerCase().includes(q)||(t.aircraft||’’).toLowerCase().includes(q)); }
+const q=document.getElementById("search").value.toLowerCase()
 
-async function loadTasks() { S.tasks=await dbGetAll(‘tasks’); S.tasks.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)); }
-async function saveTask(task) { await dbPut(‘tasks’,task); await loadTasks(); }
-async function deleteTaskFull(id) { await dbDel(‘tasks’,id); const ps=await dbIdx(‘photos’,‘taskId’,id); for(const p of ps)await dbDel(‘photos’,p.id); await loadTasks(); }
-async function loadRunPhotos() { if(!S.runTask){S.runPhotos=[];return;} S.runPhotos=await dbIdx(‘photos’,‘taskId’,S.runTask.id); S.runPhotos.sort((a,b)=>a.createdAt-b.createdAt); }
-async function addPhotos(taskId,files) { for(const f of files){const data=await compressImage(f);await dbPut(‘photos’,{id:uid(),taskId,data,createdAt:Date.now()});} await loadRunPhotos(); }
+const list=document.getElementById("list")
 
-document.getElementById(‘photo-input’).addEventListener(‘change’,async function(e){
-const files=Array.from(e.target.files); if(!files.length)return;
-const taskId=S.view===‘run’?S.runTask.id:(S.editTask?S.editTask.id:null); if(!taskId)return;
-if(S.view===‘create’)await saveTask(S.editTask);
-await addPhotos(taskId,files); this.value=’’; render();
-});
-function openPhotoInput(){document.getElementById(‘photo-input’).click();}
+list.innerHTML=""
 
-function goList(){S.view=‘list’;S.query=’’;render();}
-function goCreate(task){S.editTask=task?JSON.parse(JSON.stringify(task)):newTask();S.view=‘create’;S.deleteConfirm=false;render();}
-async function goRun(task){S.runTask=JSON.parse(JSON.stringify(task));S.checks={};S.tab=‘steps’;await loadRunPhotos();S.view=‘run’;render();}
+tasks
+.filter(t=>t.name.toLowerCase().includes(q))
+.forEach((t,i)=>{
 
-function renderList(){
-const tasks=filtered();
-return `<div class="hdr"><div class="hdr-title">✈ MX Tasks</div><button class="btn btn-primary btn-sm" onclick="goCreate(null)">+ Task mới</button></div>
+const div=document.createElement("div")
 
-  <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" type="text" placeholder="Tìm theo tên hoặc loại tàu..." value="${esc(S.query)}" oninput="S.query=this.value;render()" autocomplete="off" autocorrect="off" spellcheck="false"></div>
-  <div class="scroll"><div class="task-list">
-    ${tasks.length===0?`<div class="empty">${S.query?'🔍 Không tìm thấy task nào<br><small>Thử từ khoá khác</small>':'✈️ Chưa có task nào<br><small style="font-size:14px;color:var(--text3)">Bấm "+ Task mới" để bắt đầu</small>'}</div>`:
-    tasks.map(t=>`<div class="task-card" onclick='goRun(${JSON.stringify(t)})'><div class="tc-info"><div class="tc-name">${esc(t.name)}</div><div class="tc-meta">${t.aircraft?esc(t.aircraft)+' · ':''}${t.steps.length} bước · ${t.materials.length} vật tư · ${t.tools.length} tool</div></div><span class="chevron">›</span></div>`).join('')}
-  </div></div>`;
+div.className="card"
+
+div.innerHTML=`
+<h3>${t.name}</h3>
+<div class="small">${t.aircraft||""}</div>
+<div class="small">${t.steps.length} bước</div>
+`
+
+div.onclick=()=>openTask(i)
+
+list.appendChild(div)
+
+})
+
 }
 
-function renderCreate(){
-const t=S.editTask; const isEdit=S.tasks.some(x=>x.id===t.id);
-return `<div class="hdr"><button class="btn btn-icon btn-sm" onclick="goList()">‹ Back</button><div class="hdr-title">${isEdit?‘Sửa task’:‘Task mới’}</div><button class="btn btn-primary btn-sm" onclick="saveAndBack()">Lưu</button></div>
+function newTask(){
 
-  <div class="scroll">
-    <div class="form-body">
-      <div class="field"><div class="label">Tên công việc *</div><input type="text" value="${esc(t.name)}" placeholder="VD: Thay lọc IDG A321 CEO" oninput="S.editTask.name=this.value" autocomplete="off"></div>
-      <div class="field"><div class="label">Tàu bay / loại</div><input type="text" value="${esc(t.aircraft)}" placeholder="VD: A321 CEO, B737-800..." oninput="S.editTask.aircraft=this.value" autocomplete="off"></div>
-    </div>
-    <div class="section">
-      <div class="sec-hdr">☑ Các bước thực hiện</div>
-      <div class="list-items">${t.steps.map((s,i)=>`<div class="list-item"><span class="li-num">${String(i+1).padStart(2,'0')}</span><span class="li-text">${esc(s)}</span><button class="btn btn-danger btn-sm" onclick="removeItem('steps',${i})">✕</button></div>`).join('')}</div>
-      <div class="add-row"><input type="text" id="inp-step" placeholder="Thêm bước..." onkeydown="if(event.key==='Enter'){addItem('steps','inp-step');event.preventDefault()}" autocomplete="off"><button class="btn btn-sm" onclick="addItem('steps','inp-step')" style="padding:13px 18px;font-size:22px;line-height:1">+</button></div>
-    </div>
-    <div class="section">
-      <div class="sec-hdr">◻ Vật tư / Part Number</div>
-      <div class="list-items">${t.materials.map((m,i)=>`<div class="list-item"><span class="li-text">${esc(m)}</span><button class="btn btn-danger btn-sm" onclick="removeItem('materials',${i})">✕</button></div>`).join('')}</div>
-      <div class="add-row"><input type="text" id="inp-mat" placeholder="VD: Oil filter P/N 12345..." onkeydown="if(event.key==='Enter'){addItem('materials','inp-mat');event.preventDefault()}" autocomplete="off"><button class="btn btn-sm" onclick="addItem('materials','inp-mat')" style="padding:13px 18px;font-size:22px;line-height:1">+</button></div>
-    </div>
-    <div class="section">
-      <div class="sec-hdr">⚙ Tool / Thiết bị</div>
-      <div class="list-items">${t.tools.map((m,i)=>`<div class="list-item"><span class="li-text">${esc(m)}</span><button class="btn btn-danger btn-sm" onclick="removeItem('tools',${i})">✕</button></div>`).join('')}</div>
-      <div class="add-row"><input type="text" id="inp-tool" placeholder="VD: Torque wrench 40-80Nm..." onkeydown="if(event.key==='Enter'){addItem('tools','inp-tool');event.preventDefault()}" autocomplete="off"><button class="btn btn-sm" onclick="addItem('tools','inp-tool')" style="padding:13px 18px;font-size:22px;line-height:1">+</button></div>
-    </div>
-    ${isEdit?`<div style="padding:4px 16px 8px"><button class="btn btn-danger" style="width:100%;justify-content:center;padding:15px;font-size:16px" onclick="S.deleteConfirm=true;render()">Xoá task này</button></div>`:''}
-    <div style="height:16px"></div>
-  </div>
-  ${S.deleteConfirm?`<div class="overlay" onclick="S.deleteConfirm=false;render()"><div class="overlay-sheet" onclick="event.stopPropagation()"><div class="overlay-title">Xoá task này?</div><div class="overlay-sub">Toàn bộ ảnh cũng sẽ bị xoá. Không thể hoàn tác.</div><div class="overlay-actions"><button class="btn btn-danger" onclick="doDelete('${t.id}')">Xoá</button><button class="btn" onclick="S.deleteConfirm=false;render()">Huỷ</button></div></div></div>`:''}`;
+current=null
+
+document.getElementById("editor").classList.remove("hidden")
+
+document.getElementById("name").value=""
+document.getElementById("aircraft").value=""
+document.getElementById("steps").value=""
+document.getElementById("materials").value=""
+document.getElementById("tools").value=""
+document.getElementById("photos").innerHTML=""
+
 }
 
-function renderRun(){
-const t=S.runTask;
-const doneSteps=t.steps.filter((_,i)=>S.checks[‘s’+i]).length;
-const pct=t.steps.length?Math.round(doneSteps/t.steps.length*100):0;
-const allDone=t.steps.length>0&&doneSteps===t.steps.length;
-const photos=S.runPhotos;
-let content=’’;
-if(S.tab===‘steps’){content=t.steps.length===0?’<div class="empty">Chưa có bước nào</div>’:t.steps.map((s,i)=>`<div class="check-item" onclick="tog('s${i}')"><div class="chk-box ${S.checks['s'+i]?'done':''}">${S.checks['s'+i]?'<span style="color:#fff;font-size:17px;font-weight:800">✓</span>':''}</div><div><div class="chk-num">${String(i+1).padStart(2,'0')}</div><div class="chk-text ${S.checks['s'+i]?'done':''}">${esc(s)}</div></div></div>`).join(’’);}
-else if(S.tab===‘mat’){content=t.materials.length===0?’<div class="empty">Chưa có vật tư nào</div>’:t.materials.map((m,i)=>`<div class="mat-item" onclick="tog('m${i}')"><div class="chk-box ${S.checks['m'+i]?'done':''}" style="width:26px;height:26px;min-width:26px">${S.checks['m'+i]?'<span style="color:#fff;font-size:15px;font-weight:800">✓</span>':''}</div><span class="mat-text ${S.checks['m'+i]?'done':''}">${esc(m)}</span></div>`).join(’’);}
-else if(S.tab===‘tools’){content=t.tools.length===0?’<div class="empty">Chưa có tool nào</div>’:t.tools.map((m,i)=>`<div class="mat-item" onclick="tog('t${i}')"><div class="chk-box ${S.checks['t'+i]?'done':''}" style="width:26px;height:26px;min-width:26px">${S.checks['t'+i]?'<span style="color:#fff;font-size:15px;font-weight:800">✓</span>':''}</div><span class="mat-text ${S.checks['t'+i]?'done':''}">${esc(m)}</span></div>`).join(’’);}
-else if(S.tab===‘photos’){content=`<div class="photo-grid">${photos.map(p=>`<div class="photo-thumb"><img src="${p.data}" loading="lazy" onclick="S.lightbox='${p.id}';render()" alt="photo"><div class="photo-del" onclick="event.stopPropagation();delPhoto('${p.id}')">✕</div></div>`).join('')}<div class="add-photo-btn" onclick="openPhotoInput()"><span style="font-size:34px;opacity:0.3;line-height:1">+</span><span>Chụp / chọn ảnh</span></div></div>`;}
-return `<div class="hdr"><button class="btn btn-icon btn-sm" onclick="goList()">‹ Back</button><div style="flex:1;min-width:0"><div style="font-size:17px;font-weight:700;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--text)">${esc(t.name)}</div>${t.aircraft?`<div class="hdr-sub">${esc(t.aircraft)}</div>`:''}</div>${allDone?`<span class="status-done">✓ Done</span>`:''}<button class="btn btn-sm btn-icon" onclick="goCreate(S.runTask)" style="font-size:18px">✎</button></div> ${t.steps.length?`<div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div><div class="prog-text">${doneSteps} / ${t.steps.length} bước · ${pct}%</div></div>`:’’}
+function openTask(i){
 
-  <div class="tab-bar"><div class="tab ${S.tab==='steps'?'active':''}" onclick="S.tab='steps';render()">Checklist${t.steps.length?` (${t.steps.length})`:''}</div><div class="tab ${S.tab==='mat'?'active':''}" onclick="S.tab='mat';render()">Vật tư${t.materials.length?` (${t.materials.length})`:''}</div><div class="tab ${S.tab==='tools'?'active':''}" onclick="S.tab='tools';render()">Tool${t.tools.length?` (${t.tools.length})`:''}</div><div class="tab ${S.tab==='photos'?'active':''}" onclick="S.tab='photos';render()">Ảnh${photos.length?` (${photos.length})`:''}</div></div>
-  <div class="scroll">${content}</div>
-  ${S.lightbox?`<div class="lightbox" onclick="S.lightbox=null;render()"><div class="lb-close">✕</div><img src="${(photos.find(p=>p.id===S.lightbox)||{}).data||''}" alt="photo"></div>`:''}`;
+current=i
+
+const t=tasks[i]
+
+document.getElementById("editor").classList.remove("hidden")
+
+document.getElementById("name").value=t.name
+document.getElementById("aircraft").value=t.aircraft
+document.getElementById("steps").value=t.steps.join("\n")
+document.getElementById("materials").value=t.materials.join("\n")
+document.getElementById("tools").value=t.tools.join("\n")
+
+renderPhotos(t.photos||[])
+
 }
 
-function tog(k){S.checks[k]=!S.checks[k];render();}
-function addItem(field,inputId){const el=document.getElementById(inputId);if(!el||!el.value.trim())return;S.editTask[field].push(el.value.trim());el.value=’’;render();setTimeout(()=>{const e=document.getElementById(inputId);if(e)e.focus();},10);}
-function removeItem(field,i){S.editTask[field].splice(i,1);render();}
-async function saveAndBack(){if(!S.editTask.name.trim()){alert(‘Điền tên task trước nhé!’);return;}await saveTask(S.editTask);goList();}
-async function doDelete(id){S.deleteConfirm=false;await deleteTaskFull(id);goList();}
-async function delPhoto(photoId){if(!confirm(‘Xoá ảnh này?’))return;await dbDel(‘photos’,photoId);await loadRunPhotos();render();}
+function renderPhotos(arr){
 
-function render(){const app=document.getElementById(‘app’);if(S.view===‘list’)app.innerHTML=renderList();else if(S.view===‘create’)app.innerHTML=renderCreate();else if(S.view===‘run’)app.innerHTML=renderRun();}
+const p=document.getElementById("photos")
 
-async function boot(){db=await openDB();await loadTasks();S.view=‘list’;render();}
-boot().catch(e=>{document.getElementById(‘app’).innerHTML=`<div class="empty">Lỗi: ${e.message}</div>`;});
+p.innerHTML=""
+
+arr.forEach(src=>{
+
+const img=document.createElement("img")
+
+img.src=src
+
+img.className="photo"
+
+p.appendChild(img)
+
+})
+
+}
+
+document.getElementById("photo").addEventListener("change",e=>{
+
+const file=e.target.files[0]
+
+if(!file)return
+
+const reader=new FileReader()
+
+reader.onload=()=>{
+
+const img=reader.result
+
+const box=document.getElementById("photos")
+
+const im=document.createElement("img")
+
+im.src=img
+
+im.className="photo"
+
+box.appendChild(im)
+
+}
+
+reader.readAsDataURL(file)
+
+})
+
+function saveTask(){
+
+const photos=[...document.querySelectorAll(".photo")].map(i=>i.src)
+
+const obj={
+
+name:document.getElementById("name").value,
+
+aircraft:document.getElementById("aircraft").value,
+
+steps:document.getElementById("steps").value.split("\n").filter(Boolean),
+
+materials:document.getElementById("materials").value.split("\n").filter(Boolean),
+
+tools:document.getElementById("tools").value.split("\n").filter(Boolean),
+
+photos
+
+}
+
+if(current===null){
+tasks.unshift(obj)
+}else{
+tasks[current]=obj
+}
+
+saveDB()
+
+render()
+
+alert("Đã lưu")
+
+}
+
+render()
+
 </script>
 
 </body>
