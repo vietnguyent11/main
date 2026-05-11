@@ -20,738 +20,475 @@
   --orange:#f59e0b;
   --red:#ef4444;
   --radius:12px;
-  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --zoom:1;
 }
-
+html{ font-size:calc(16px * var(--zoom)); }
 *{ box-sizing:border-box; margin:0; padding:0; }
-
 body{
   background:var(--bg);
   color:var(--text);
   font-family:'IBM Plex Sans',sans-serif;
   min-height:100vh;
   -webkit-tap-highlight-color:transparent;
-  user-select:none;
-  -webkit-user-select:none;
+  user-select:none; -webkit-user-select:none;
   overscroll-behavior:contain;
 }
-
-/* ── HEADER cải tiến: nút + Task ở giữa, điều hướng 2 bên ── */
+/* ── HEADER ── */
 header{
   background:var(--surface);
   border-bottom:1px solid var(--border);
-  padding:10px 12px;
-  position:sticky;
-  top:0;
-  z-index:100;
-  display:flex;
-  align-items:center;
-  justify-content:space-between; /* đẩy các phần ra 2 đầu, nút giữa tự động căn giữa */
+  padding:0.6rem 0.8rem;
+  position:sticky; top:0; z-index:100;
+  display:flex; align-items:center;
 }
-
+.header-left{ flex-shrink:0; }
+.header-right{ flex-shrink:0; }
 .nav-btn{
   background:var(--card);
   border:1px solid var(--border);
   color:var(--text);
-  width:40px; height:40px;
-  border-radius:10px;
-  font-size:18px;
-  cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
+  width:2.4rem; height:2.4rem;
+  border-radius:0.6rem; font-size:1.1rem;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
   transition:.15s;
-  flex-shrink:0;
-  -webkit-tap-highlight-color:transparent;
 }
 .nav-btn:hover:not(:disabled){ background:var(--border); }
-.nav-btn:active:not(:disabled){ transform:scale(.93); }
-.nav-btn:disabled{ opacity:.25; cursor:default; pointer-events:none; }
-
+.nav-btn:active:not(:disabled){ transform:scale(0.93); }
+.nav-btn:disabled{ opacity:0.25; cursor:default; pointer-events:none; }
 .btn-add{
-  background:var(--accent);
-  border:none;
-  color:#fff;
-  padding:10px 24px;
-  border-radius:10px;
-  font-size:16px;
-  font-weight:600;
-  cursor:pointer;
-  transition:.15s;
-  white-space:nowrap;
-  font-family:'IBM Plex Sans',sans-serif;
-  -webkit-tap-highlight-color:transparent;
+  background:var(--accent); border:none; color:#fff;
+  padding:0.6rem 1.5rem; border-radius:0.6rem;
+  font-size:1rem; font-weight:600; cursor:pointer; transition:.15s; white-space:nowrap;
+  flex-shrink:0;
 }
 .btn-add:hover{ background:#2563eb; }
-.btn-add:active{ transform:scale(.93); }
-
-/* ── CONTAINER ──────────────────────────────────────── */
-.container{ padding:12px; max-width:640px; margin:0 auto; }
-
-/* ── SEARCH ─────────────────────────────────────────── */
-#searchWrap{ margin-bottom:12px; }
+.btn-add:active{ transform:scale(0.93); }
+.zoom-btn, .settings-btn{
+  background:transparent; border:1px solid var(--border); color:var(--muted);
+  width:2rem; height:2rem; border-radius:0.5rem; font-size:1rem;
+  cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.15s;
+}
+.zoom-btn:hover, .settings-btn:hover{ color:var(--text); border-color:var(--text); }
+/* ── Container ── */
+.container{ padding:0.75rem; max-width:640px; margin:0 auto; }
+#searchWrap{ margin-bottom:0.75rem; }
 #search{
-  width:100%;
-  background:var(--card);
-  border:1px solid var(--border);
-  color:var(--text);
-  padding:11px 14px;
-  border-radius:var(--radius);
-  font-size:15px;
-  font-family:'IBM Plex Sans',sans-serif;
-  transition:.15s;
+  width:100%; background:var(--card); border:1px solid var(--border);
+  color:var(--text); padding:0.7rem 0.9rem; border-radius:var(--radius); font-size:0.95rem;
 }
 #search::placeholder{ color:var(--muted); }
 #search:focus{ outline:none; border-color:var(--accent); }
-
-/* ── CARD (list view – gọn) ─────────────────────────── */
+/* ── Card ── */
 .card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:13px 14px;
-  margin-bottom:9px;
-  transition:.15s;
-  cursor:pointer;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius); padding:0.8rem 0.9rem; margin-bottom:0.6rem;
+  transition:0.15s; cursor:pointer;
+  display:flex; justify-content:space-between; align-items:flex-start; gap:0.5rem;
 }
 .card:hover{ border-color:var(--accent); }
-.card:active{ transform:scale(.98); }
-
-.card-info{ flex:1; min-width:0; }
-.card-title{ font-size:15px; font-weight:600; line-height:1.3; }
-.card-sub{ font-size:12px; color:var(--muted); margin-top:2px; font-family:'IBM Plex Mono',monospace; }
-
+.card:active{ transform:scale(0.98); }
+.card-info{ flex:1; min-width:0; word-break:break-word; }
+.card-title{ font-size:0.95rem; font-weight:600; line-height:1.3; white-space:normal; }
+.card-sub{ font-size:0.75rem; color:var(--muted); margin-top:0.15rem; font-family:'IBM Plex Mono',monospace; white-space:normal; }
 .card-badge{
-  font-size:11px;
-  font-family:'IBM Plex Mono',monospace;
-  padding:3px 8px;
-  border-radius:20px;
-  white-space:nowrap;
-  flex-shrink:0;
+  font-size:0.7rem; font-family:'IBM Plex Mono',monospace;
+  padding:0.2rem 0.5rem; border-radius:1rem; white-space:nowrap; flex-shrink:0;
 }
 .badge-done{ background:#10b98122; color:var(--green); }
 .badge-partial{ background:#f59e0b22; color:var(--orange); }
 .badge-empty{ background:#2a3347; color:var(--muted); }
-
-.btn-edit-sm{
-  background:transparent;
-  border:1px solid var(--border);
-  color:var(--muted);
-  padding:5px 11px;
-  border-radius:7px;
-  font-size:12px;
-  cursor:pointer;
-  transition:.15s;
-  white-space:nowrap;
-  flex-shrink:0;
-  font-family:'IBM Plex Sans',sans-serif;
-  -webkit-tap-highlight-color:transparent;
+.btn-edit-sm, .btn-reset-sm{
+  background:transparent; border:1px solid var(--border);
+  color:var(--muted); padding:0.3rem 0.7rem; border-radius:0.4rem;
+  font-size:0.7rem; cursor:pointer; transition:.15s; white-space:nowrap; flex-shrink:0;
 }
 .btn-edit-sm:hover{ border-color:var(--accent); color:var(--text); }
-.btn-edit-sm:active{ transform:scale(.93); }
-
-/* ── DETAIL VIEW ────────────────────────────────────── */
-.detail-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:10px;
-  margin-bottom:6px;
-}
-.detail-title{ font-size:18px; font-weight:600; line-height:1.3; flex:1; }
-.detail-sub{ font-size:13px; color:var(--muted); font-family:'IBM Plex Mono',monospace; margin-bottom:4px; }
-
-.progress-bar{
-  height:5px;
-  background:var(--border);
-  border-radius:5px;
-  margin:10px 0 12px;
-  overflow:hidden;
-}
-.progress-fill{
-  height:100%;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-  border-radius:5px;
-  transition:width .3s;
-}
-
-/* checklist in detail */
-.checklist-item{
-  display:flex;
-  align-items:flex-start;
-  gap:10px;
-  padding:8px 0;
-  border-bottom:1px solid var(--border);
-  font-size:14px;
-}
+.btn-reset-sm:hover{ border-color:var(--orange); color:var(--orange); }
+.btn-edit-sm:active, .btn-reset-sm:active{ transform:scale(0.93); }
+/* ── Detail ── */
+.detail-header{ display:flex; justify-content:space-between; align-items:flex-start; gap:0.6rem; margin-bottom:0.4rem; }
+.detail-title{ font-size:1.1rem; font-weight:600; line-height:1.3; flex:1; word-break:break-word; }
+.detail-sub{ font-size:0.8rem; color:var(--muted); font-family:'IBM Plex Mono',monospace; margin-bottom:0.25rem; white-space:normal; }
+.progress-bar{ height:0.3rem; background:var(--border); border-radius:0.3rem; margin:0.6rem 0 0.75rem; overflow:hidden; }
+.progress-fill{ height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:0.3rem; transition:width .3s; }
+.checklist-item{ display:flex; align-items:flex-start; gap:0.6rem; padding:0.5rem 0; border-bottom:1px solid var(--border); font-size:0.9rem; }
 .checklist-item:last-child{ border-bottom:none; }
-
-.checklist-item input[type=checkbox]{
-  width:18px; height:18px;
-  margin-top:2px;
-  accent-color:var(--accent2);
-  cursor:pointer;
-  flex-shrink:0;
-}
+.checklist-item input[type=checkbox]{ width:1.1rem; height:1.1rem; margin-top:0.15rem; accent-color:var(--accent2); cursor:pointer; flex-shrink:0; }
 .checklist-item span{ flex:1; line-height:1.4; }
 .checked-text{ text-decoration:line-through; color:var(--muted); }
-
-/* section toggle in detail */
-.section-toggle{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:10px;
-  margin-top:10px;
-  overflow:hidden;
-}
-.section-toggle-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 13px;
-  cursor:pointer;
-  font-size:13px;
-  font-weight:600;
-  color:var(--muted);
-  user-select:none;
-  -webkit-tap-highlight-color:transparent;
-}
+.section-toggle{ background:var(--surface); border:1px solid var(--border); border-radius:0.6rem; margin-top:0.6rem; overflow:hidden; }
+.section-toggle-header{ display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0.8rem; cursor:pointer; font-size:0.8rem; font-weight:600; color:var(--muted); user-select:none; }
 .section-toggle-header:hover{ color:var(--text); }
-.section-toggle-header:active{ background:rgba(255,255,255,0.03); }
-.section-toggle-body{
-  display:none;
-  padding:2px 13px 10px;
-}
+.section-toggle-body{ display:none; padding:0.1rem 0.8rem 0.6rem; }
 .section-toggle-body.open{ display:block; }
-.section-toggle-arrow{
-  transition:.2s;
-  display:inline-block;
-  font-size:12px;
-}
+.section-toggle-arrow{ transition:0.2s; display:inline-block; font-size:0.7rem; }
 .section-toggle-header.open .section-toggle-arrow{ transform:rotate(180deg); }
-
-.prep-item{
-  display:flex; align-items:center; gap:10px;
-  padding:7px 0;
-  border-bottom:1px solid var(--border);
-  font-size:13px;
-}
+.prep-item{ display:flex; align-items:center; gap:0.6rem; padding:0.4rem 0; border-bottom:1px solid var(--border); font-size:0.8rem; }
 .prep-item:last-child{ border-bottom:none; }
-.prep-item input[type=checkbox]{
-  width:17px; height:17px;
-  accent-color:var(--green);
-  cursor:pointer;
-  flex-shrink:0;
-}
-
-/* photos in detail */
-.detail-photos{ margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
-.detail-photos img{
-  width:calc(50% - 4px);
-  border-radius:8px;
-  object-fit:cover;
-  aspect-ratio:4/3;
-  cursor:pointer;
-}
-
-/* detail actions */
-.detail-actions{
-  display:flex;
-  gap:8px;
-  margin-top:14px;
-}
-.btn-edit-big{
-  flex:1;
-  background:var(--accent);
-  border:none;
-  color:#fff;
-  padding:12px;
-  border-radius:10px;
-  font-size:14px;
-  font-weight:600;
-  cursor:pointer;
-  font-family:'IBM Plex Sans',sans-serif;
-  text-align:center;
-  transition:.15s;
-}
+.prep-item input[type=checkbox]{ width:1rem; height:1rem; accent-color:var(--green); cursor:pointer; flex-shrink:0; }
+.detail-photos{ margin-top:0.75rem; display:flex; flex-wrap:wrap; gap:0.5rem; }
+.detail-photos img{ width:calc(50% - 0.25rem); border-radius:0.5rem; object-fit:cover; aspect-ratio:4/3; cursor:pointer; }
+.detail-actions{ display:flex; gap:0.5rem; margin-top:0.9rem; flex-wrap:wrap; }
+.btn-edit-big{ flex:1; background:var(--accent); border:none; color:#fff; padding:0.75rem; border-radius:0.6rem; font-size:0.9rem; font-weight:600; cursor:pointer; text-align:center; transition:.15s; }
 .btn-edit-big:hover{ background:#2563eb; }
-.btn-edit-big:active{ transform:scale(.95); }
-.btn-back-detail{
-  flex:1;
-  background:transparent;
-  border:1px solid var(--border);
-  color:var(--muted);
-  padding:12px;
-  border-radius:10px;
-  font-size:14px;
-  cursor:pointer;
-  font-family:'IBM Plex Sans',sans-serif;
-  text-align:center;
-  transition:.15s;
-}
+.btn-back-detail{ flex:1; background:transparent; border:1px solid var(--border); color:var(--muted); padding:0.75rem; border-radius:0.6rem; font-size:0.9rem; cursor:pointer; text-align:center; transition:.15s; }
 .btn-back-detail:hover{ border-color:var(--text); color:var(--text); }
-.btn-back-detail:active{ transform:scale(.95); }
-
-/* ── EDITOR ─────────────────────────────────────────── */
+.btn-reset-detail{ background:transparent; border:1px solid var(--orange); color:var(--orange); padding:0.75rem 1rem; border-radius:0.6rem; font-size:0.85rem; cursor:pointer; transition:.15s; }
+.btn-reset-detail:hover{ background:var(--orange); color:#fff; }
+.btn-delete{ background:transparent; border:1px solid var(--red); color:var(--red); padding:0.6rem 0.9rem; border-radius:0.6rem; font-size:0.8rem; cursor:pointer; transition:.15s; }
+.btn-delete:hover{ background:var(--red); color:#fff; }
+/* ── Editor ── */
 #editor{ display:none; }
-
-.field-label{
-  font-size:11px;
-  font-weight:600;
-  letter-spacing:.08em;
-  color:var(--muted);
-  text-transform:uppercase;
-  margin-bottom:5px;
-  margin-top:14px;
-}
+.field-label{ font-size:0.7rem; font-weight:600; letter-spacing:0.05em; color:var(--muted); text-transform:uppercase; margin-bottom:0.3rem; margin-top:0.9rem; }
 .field-label:first-child{ margin-top:0; }
-
-#editor input[type=text],
-#editor textarea{
-  width:100%;
-  background:var(--card);
-  border:1px solid var(--border);
-  color:var(--text);
-  padding:11px 13px;
-  border-radius:var(--radius);
-  font-size:14px;
-  font-family:'IBM Plex Sans',sans-serif;
-  resize:vertical;
-  transition:.15s;
+#editor input[type=text], #editor textarea{
+  width:100%; background:var(--card); border:1px solid var(--border);
+  color:var(--text); padding:0.7rem 0.8rem; border-radius:var(--radius);
+  font-size:0.9rem; font-family:'IBM Plex Sans',sans-serif; resize:vertical; transition:.15s;
 }
-#editor input[type=text]:focus,
-#editor textarea:focus{ outline:none; border-color:var(--accent); }
-#editor textarea{ min-height:90px; }
-
-.file-label{
-  display:block;
-  background:var(--surface);
-  border:1px dashed var(--border);
-  border-radius:var(--radius);
-  padding:14px;
-  text-align:center;
-  cursor:pointer;
-  font-size:13px;
-  color:var(--muted);
-  transition:.15s;
-}
+#editor input[type=text]:focus, #editor textarea:focus{ outline:none; border-color:var(--accent); }
+#editor textarea{ min-height:5.5rem; overflow-y:hidden; }
+.file-label{ display:block; background:var(--surface); border:1px dashed var(--border); border-radius:var(--radius); padding:0.9rem; text-align:center; cursor:pointer; font-size:0.8rem; color:var(--muted); transition:.15s; }
 .file-label:hover{ border-color:var(--accent); color:var(--text); }
 #photoInput{ display:none; }
-
-#photos img{
-  width:100%;
-  border-radius:8px;
-  margin-top:8px;
-}
-
-.btn-save{
-  width:100%;
-  background:var(--accent);
-  border:none;
-  color:#fff;
-  padding:14px;
-  border-radius:var(--radius);
-  font-size:16px;
-  font-weight:600;
-  cursor:pointer;
-  margin-top:16px;
-  font-family:'IBM Plex Sans',sans-serif;
-  transition:.15s;
-}
+.photo-preview{ position:relative; margin-top:0.5rem; display:inline-block; width:100%; }
+.photo-preview img{ width:100%; border-radius:0.5rem; display:block; }
+.photo-remove{ position:absolute; top:0.3rem; right:0.3rem; background:var(--red); color:#fff; border:none; width:1.8rem; height:1.8rem; border-radius:50%; font-size:1rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:0.9; transition:.15s; }
+.photo-remove:hover{ opacity:1; transform:scale(1.1); }
+.btn-save{ width:100%; background:var(--accent); border:none; color:#fff; padding:0.9rem; border-radius:var(--radius); font-size:1rem; font-weight:600; cursor:pointer; margin-top:1rem; transition:.15s; }
 .btn-save:hover{ background:#2563eb; }
-.btn-save:active{ transform:scale(.95); }
-
-.btn-back-editor{
-  background:transparent;
-  border:1px solid var(--border);
-  color:var(--muted);
-  padding:10px 16px;
-  border-radius:10px;
-  font-size:14px;
-  cursor:pointer;
-  margin-top:8px;
-  font-family:'IBM Plex Sans',sans-serif;
-  transition:.15s;
-  width:100%;
-}
+.btn-back-editor{ background:transparent; border:1px solid var(--border); color:var(--muted); padding:0.6rem 1rem; border-radius:0.6rem; font-size:0.85rem; cursor:pointer; margin-top:0.5rem; width:100%; transition:.15s; }
 .btn-back-editor:hover{ border-color:var(--text); color:var(--text); }
-
-.empty{
-  text-align:center;
-  color:var(--muted);
-  padding:48px 0;
-  font-size:14px;
-}
-
-/* ── SWIPE INDICATOR ────────────────────────────────── */
-.swipe-hint{
-  position:fixed;
-  top:50%;
-  transform:translateY(-50%);
-  width:32px;
-  height:32px;
-  background:var(--accent);
-  color:#fff;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:14px;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .2s;
-  z-index:200;
-}
-.swipe-hint.left{ left:8px; }
-.swipe-hint.right{ right:8px; }
-
-/* Toast thông báo */
-.toast{
-  position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:var(--card);
-  color:var(--text);
-  padding:10px 20px;
-  border-radius:20px;
-  font-size:14px;
-  border:1px solid var(--border);
-  z-index:999;
-  opacity:0;
-  transition:opacity .3s;
-  pointer-events:none;
-}
+.empty{ text-align:center; color:var(--muted); padding:3rem 0; font-size:0.9rem; }
+.toast{ position:fixed; bottom:1.2rem; left:50%; transform:translateX(-50%); background:var(--card); color:var(--text); padding:0.6rem 1.2rem; border-radius:1.2rem; font-size:0.85rem; border:1px solid var(--border); z-index:999; opacity:0; transition:opacity .3s; pointer-events:none; }
 .toast.show{ opacity:1; }
+.modal{ position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:flex; align-items:center; justify-content:center; }
+.modal-content{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.2rem; width:min(90%,300px); }
+.modal-content h3{ margin-bottom:1rem; font-size:1rem; }
+.modal-btn{ width:100%; padding:0.7rem; margin-bottom:0.5rem; background:var(--card); border:1px solid var(--border); color:var(--text); border-radius:0.6rem; font-size:0.85rem; cursor:pointer; transition:.15s; }
+.modal-btn:hover{ border-color:var(--accent); }
 </style>
 </head>
 <body>
-
-<!-- ── HEADER MỚI: back ◀ | + Task | ▶ forward ── -->
 <header>
-  <button class="nav-btn" id="btnBack" onclick="historyBack()" disabled title="Quay lại">◀</button>
-  <button class="btn-add" id="btnAddTask" onclick="goNewTask()">+ Task</button>
-  <button class="nav-btn" id="btnFwd" onclick="historyFwd()" disabled title="Tiến">▶</button>
+  <div class="header-left">
+    <button class="nav-btn" id="btnBack" onclick="historyBack()" disabled>◀</button>
+  </div>
+  <div style="flex: 1;"></div> <!-- Spacer -->
+  <button class="btn-add" onclick="goNewTask()">+ Task</button>
+  <div style="flex: 1; display: flex; justify-content: center; gap: 6px;">
+    <button class="zoom-btn" onclick="zoomOut()">A-</button>
+    <button class="zoom-btn" onclick="zoomIn()">A+</button>
+    <button class="settings-btn" onclick="openSettings()">⚙️</button>
+  </div>
+  <div style="width: 16px;"></div> <!-- Spacer for Fwd button -->
+  <div class="header-right">
+    <button class="nav-btn" id="btnFwd" onclick="historyFwd()" disabled>▶</button>
+  </div>
 </header>
-
-<!-- ── SWIPE HINTS ───────────────────────────────────────── -->
-<div class="swipe-hint left" id="swipeLeft">◀</div>
-<div class="swipe-hint right" id="swipeRight">▶</div>
-
-<!-- Toast thông báo -->
 <div class="toast" id="toast"></div>
-
-<!-- ── CONTAINER ─────────────────────────────────────────── -->
 <div class="container">
-
-  <!-- LIST VIEW -->
   <div id="listView">
-    <div id="searchWrap">
-      <input id="search" placeholder="🔍  Tìm task, tàu..." oninput="renderList()">
-    </div>
+    <div id="searchWrap"><input id="search" placeholder="🔍  Tìm task, tàu, AMM..." oninput="renderList()"></div>
     <div id="list"></div>
   </div>
-
-  <!-- DETAIL VIEW -->
-  <div id="detailView" style="display:none;">
-    <div id="detailContent"></div>
-  </div>
-
-  <!-- EDITOR VIEW -->
+  <div id="detailView" style="display:none;"><div id="detailContent"></div></div>
   <div id="editor">
     <div class="field-label">Tên task</div>
     <input type="text" id="fName" placeholder="VD: Thay lốp bánh trước">
-
     <div class="field-label">Aircraft / Số hiệu</div>
     <input type="text" id="fAircraft" placeholder="VD: VN-A123">
-
-    <div class="field-label">Checklist (mỗi dòng 1 bước)</div>
-    <textarea id="fSteps" placeholder="Bước 1&#10;Bước 2&#10;..."></textarea>
-
-    <div class="field-label">Vật tư (mỗi dòng 1 item)</div>
-    <textarea id="fMaterials" placeholder="Ốc M6 x4&#10;Dầu thủy lực 1L&#10;..."></textarea>
-
-    <div class="field-label">Tools (mỗi dòng 1 item)</div>
-    <textarea id="fTools" placeholder="Torque wrench&#10;Multimeter&#10;..."></textarea>
-
+    <div class="field-label">AMM Ref</div>
+    <input type="text" id="fAmm" placeholder="VD: AMM 32-41-11">
+    <div class="field-label">Checklist (Enter để thêm bước mới & tự đánh số)</div>
+    <textarea id="fSteps" placeholder="Bắt đầu gõ bước đầu tiên..."></textarea>
+    <div class="field-label">Vật tư, hóa chất (Enter để thêm item mới & tự đánh số)</div>
+    <textarea id="fMaterials" placeholder="Ốc M6 x4..."></textarea>
+    <div class="field-label">Tools (Enter để thêm item mới & tự đánh số)</div>
+    <textarea id="fTools" placeholder="Torque wrench..."></textarea>
     <div class="field-label">Ảnh đính kèm</div>
     <label class="file-label" for="photoInput">📷  Chụp hoặc chọn ảnh</label>
     <input type="file" id="photoInput" accept="image/*" capture="environment" multiple>
     <div id="photos"></div>
-
     <button class="btn-save" onclick="saveTask()">💾  Lưu task</button>
     <button class="btn-back-editor" onclick="goBackFromEditor()">← Quay lại</button>
   </div>
-
 </div>
-
+<div id="settingsModal" class="modal" style="display:none;" onclick="if(event.target===this)closeSettings()">
+  <div class="modal-content">
+    <h3>⚙️ Cài đặt & Dữ liệu</h3>
+    <button class="modal-btn" onclick="exportData();closeSettings()">📥 Xuất dữ liệu (file JSON)</button>
+    <button class="modal-btn" onclick="document.getElementById('importFile').click()">📤 Nhập dữ liệu (file JSON)</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    <button class="modal-btn" onclick="closeSettings()" style="background:var(--border);">Đóng</button>
+    <p style="font-size:0.7rem; color:var(--muted); margin-top:0.8rem;">
+      🛡️ Dữ liệu lưu trong IndexedDB (bộ nhớ Safari).<br>
+      ⚠️ Xoá lịch sử Safari sẽ mất dữ liệu.<br>
+      ✅ Hãy thường xuyên <strong>Xuất ra file</strong> để backup.
+    </p>
+  </div>
+</div>
 <script>
-// ─── DATA ────────────────────────────────────────────────────────────────────
+// ─── INDEXEDDB ──────────────────────────────────────────────────
+const DB_NAME = 'MX_Tasks_DB';
+const STORE_NAME = 'appState';
+let db = null;
+
+function openDB(){
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'key' });
+      }
+    };
+    request.onsuccess = (e) => { db = e.target.result; resolve(db); };
+    request.onerror = (e) => reject(e.target.error);
+  });
+}
+
+function dbPut(key, value){
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    store.put({ key, value });
+    tx.oncomplete = () => resolve();
+    tx.onerror = (e) => reject(e.target.error);
+  });
+}
+
+function dbGet(key){
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.get(key);
+    req.onsuccess = () => resolve(req.result ? req.result.value : undefined);
+    req.onerror = (e) => reject(e.target.error);
+  });
+}
+
+// ─── DATA ───────────────────────────────────────────────────────
 let tasks = [];
 let prepState = {};
 let sectionOpenState = {};
+let zoomLevel = 1;
 
-try {
-  tasks = JSON.parse(localStorage.getItem("mx_tasks") || "[]");
-} catch(e) { tasks = []; }
-try {
-  prepState = JSON.parse(localStorage.getItem("mx_prep") || "{}");
-} catch(e) { prepState = {}; }
-try {
-  sectionOpenState = JSON.parse(localStorage.getItem("mx_section_open") || "{}");
-} catch(e) { sectionOpenState = {}; }
+async function loadAll(){
+  await openDB();
+  const storedTasks = await dbGet('tasks');
+  if(storedTasks) tasks = storedTasks;
+  const storedPrep = await dbGet('prepState');
+  if(storedPrep) prepState = storedPrep;
+  const storedSections = await dbGet('sectionOpenState');
+  if(storedSections) sectionOpenState = storedSections;
+  const storedZoom = await dbGet('zoomLevel');
+  if(storedZoom !== undefined) zoomLevel = storedZoom;
+  applyZoom();
+}
 
-function saveDB(){
+async function saveAll(){
   try {
-    localStorage.setItem("mx_tasks", JSON.stringify(tasks));
+    await dbPut('tasks', tasks);
+    await dbPut('prepState', prepState);
+    await dbPut('sectionOpenState', sectionOpenState);
+    await dbPut('zoomLevel', zoomLevel);
     return true;
-  } catch(e) {
-    console.error("Lỗi lưu tasks:", e);
-    showToast("❌ Không thể lưu! Có thể bộ nhớ đầy hoặc ảnh quá lớn.");
+  } catch(e){
+    showToast("❌ Lỗi lưu dữ liệu!");
     return false;
   }
 }
-function savePrepDB(){
-  try { localStorage.setItem("mx_prep", JSON.stringify(prepState)); } catch(e) {}
-}
-function saveSectionState(){
-  try { localStorage.setItem("mx_section_open", JSON.stringify(sectionOpenState)); } catch(e) {}
-}
 
-// Toast helper
-function showToast(msg, duration = 2000){
+function applyZoom(){
+  document.documentElement.style.setProperty('--zoom', zoomLevel);
+}
+function zoomIn(){ zoomLevel = Math.min(2, zoomLevel + 0.1); applyZoom(); saveAll(); }
+function zoomOut(){ zoomLevel = Math.max(0.5, zoomLevel - 0.1); applyZoom(); saveAll(); }
+
+function showToast(msg, dur=2000){
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   clearTimeout(t._timeout);
-  t._timeout = setTimeout(() => t.classList.remove('show'), duration);
+  t._timeout = setTimeout(() => t.classList.remove('show'), dur);
 }
 
-// ─── NAVIGATION HISTORY ───────────────────────────────────────────────────────
+// ─── NAVIGATION ────────────────────────────────────────────────
 let navHistory = [{view:'list'}];
 let navPos = 0;
 
 function pushNav(page){
-  navHistory = navHistory.slice(0, navPos + 1);
+  navHistory = navHistory.slice(0, navPos+1);
   navHistory.push(page);
-  navPos = navHistory.length - 1;
+  navPos = navHistory.length-1;
   updateNavBtns();
 }
-
 function historyBack(){
   if(navPos <= 0) return;
+  if(!canLeaveEditor()) return;
   navPos--;
   applyNav(navHistory[navPos]);
   updateNavBtns();
 }
 function historyFwd(){
-  if(navPos >= navHistory.length - 1) return;
+  if(navPos >= navHistory.length-1) return;
+  if(!canLeaveEditor()) return;
   navPos++;
   applyNav(navHistory[navPos]);
   updateNavBtns();
 }
 function updateNavBtns(){
   document.getElementById("btnBack").disabled = navPos <= 0;
-  document.getElementById("btnFwd").disabled  = navPos >= navHistory.length - 1;
+  document.getElementById("btnFwd").disabled = navPos >= navHistory.length-1;
 }
-
 function applyNav(page){
-  if(page.view === 'list'){
-    showListView();
-  } else if(page.view === 'detail'){
-    showDetailView(page.taskIndex);
-  } else if(page.view === 'editor'){
-    showEditorView(page.taskIndex);
+  if(page.view === 'list') showListView();
+  else if(page.view === 'detail') showDetailView(page.taskId);
+  else if(page.view === 'editor') showEditorView(page.taskId);
+}
+function canLeaveEditor(){
+  if(document.getElementById('editor').style.display !== 'none' && currentEditId !== undefined){
+    if(isEditorDirty()) return confirm("Bạn có thay đổi chưa lưu. Rời khỏi?");
   }
+  return true;
 }
 
-// ─── VIEW SWITCHING ───────────────────────────────────────────────────────────
+// ─── VIEW SWITCH ──────────────────────────────────────────────
 function showListView(){
   document.getElementById("listView").style.display = "block";
   document.getElementById("detailView").style.display = "none";
   document.getElementById("editor").style.display = "none";
   document.getElementById("searchWrap").style.display = "block";
-  document.getElementById("btnAddTask").style.display = ""; // luôn hiện nút +Task
   renderList();
 }
-
-function showDetailView(taskIndex){
-  if(taskIndex === undefined || taskIndex === null || !tasks[taskIndex]){
-    goList();
-    return;
-  }
+function showDetailView(taskId){
+  const t = tasks.find(t => t.id === taskId);
+  if(!t){ goList(); return; }
   document.getElementById("listView").style.display = "none";
   document.getElementById("detailView").style.display = "block";
   document.getElementById("editor").style.display = "none";
   document.getElementById("searchWrap").style.display = "none";
-  document.getElementById("btnAddTask").style.display = "";
-  renderDetail(taskIndex);
+  renderDetail(taskId);
 }
-
-function showEditorView(taskIndex){
+function showEditorView(taskId){
   document.getElementById("listView").style.display = "none";
   document.getElementById("detailView").style.display = "none";
   document.getElementById("editor").style.display = "block";
   document.getElementById("searchWrap").style.display = "none";
-  document.getElementById("btnAddTask").style.display = "none"; // ẩn nút +Task khi đang edit
-  loadEditor(taskIndex);
+  loadEditor(taskId);
 }
+function goList(){ pushNav({view:'list'}); showListView(); }
+function goNewTask(){ pushNav({view:'editor', taskId: null}); showEditorView(null); }
+function goDetail(taskId){ pushNav({view:'detail', taskId}); showDetailView(taskId); }
+function goEditFromDetail(taskId){ pushNav({view:'editor', taskId}); showEditorView(taskId); }
+function goBackFromEditor(){ historyBack(); }
+function goEditFromList(taskId){ pushNav({view:'editor', taskId}); showEditorView(taskId); }
 
-// ─── NAVIGATION ACTIONS ──────────────────────────────────────────────────────
-function goList(){
-  pushNav({view:'list'});
-  showListView();
-}
-function goNewTask(){
-  pushNav({view:'editor', taskIndex: null});
-  showEditorView(null);
-}
-function goDetail(taskIndex){
-  pushNav({view:'detail', taskIndex: taskIndex});
-  showDetailView(taskIndex);
-}
-function goEditFromDetail(taskIndex){
-  pushNav({view:'editor', taskIndex: taskIndex});
-  showEditorView(taskIndex);
-}
-function goBackFromEditor(){
-  historyBack();
-}
-
-// ─── LIST RENDER ─────────────────────────────────────────────────────────────
+// ─── LIST RENDER ──────────────────────────────────────────────
 function renderList(){
   const q = (document.getElementById("search").value||"").toLowerCase();
   const list = document.getElementById("list");
   list.innerHTML = "";
-
-  const filtered = tasks.map((t,i)=>({t,i})).filter(({t}) =>
-    (t.name||"").toLowerCase().includes(q) ||
-    (t.aircraft||"").toLowerCase().includes(q)
+  const filtered = tasks.filter(t =>
+    (t.name||'').toLowerCase().includes(q) ||
+    (t.aircraft||'').toLowerCase().includes(q) ||
+    (t.ammRef||'').toLowerCase().includes(q)
   );
-
-  if(!filtered.length){
-    list.innerHTML = '<div class="empty">Không có task nào</div>';
-    return;
-  }
-
-  filtered.forEach(({t, i}) => {
-    const done  = t.stepsDone || [];
-    const total = (t.steps||[]).length;
+  if(!filtered.length){ list.innerHTML = '<div class="empty">Không có task nào</div>'; return; }
+  filtered.forEach(t => {
+    const done = t.stepsDone || [];
+    const total = t.steps.length;
     const checked = done.filter(Boolean).length;
     const pct = total ? Math.round(checked/total*100) : 0;
-
-    let badgeClass = 'badge-empty', badgeText = '0%';
-    if(total){
-      badgeText = pct + '%';
-      badgeClass = pct === 100 ? 'badge-done' : pct > 0 ? 'badge-partial' : 'badge-empty';
-    }
-
+    let cls = 'badge-empty', txt = '0%';
+    if(total){ txt = pct+'%'; cls = pct===100 ? 'badge-done' : pct>0 ? 'badge-partial' : 'badge-empty'; }
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
-      <div class="card-info" onclick="event.stopPropagation();goDetail(${i})">
+      <div class="card-info" onclick="event.stopPropagation();goDetail('${t.id}')">
         <div class="card-title">${escHtml(t.name||'(chưa đặt tên)')}</div>
-        <div class="card-sub">${escHtml(t.aircraft||'')}</div>
+        <div class="card-sub">${escHtml(t.aircraft||'')} ${t.ammRef ? '· '+escHtml(t.ammRef) : ''}</div>
       </div>
-      <span class="card-badge ${badgeClass}">${badgeText}</span>
-      <button class="btn-edit-sm" onclick="event.stopPropagation();goEditFromList(${i})">✏️</button>
+      <span class="card-badge ${cls}">${txt}</span>
+      <button class="btn-edit-sm" onclick="event.stopPropagation();goEditFromList('${t.id}')">✏️</button>
+      <button class="btn-reset-sm" onclick="event.stopPropagation();resetTask('${t.id}')">↺</button>
     `;
     list.appendChild(div);
   });
 }
 
-function goEditFromList(taskIndex){
-  pushNav({view:'editor', taskIndex: taskIndex});
-  showEditorView(taskIndex);
-}
-
-// ─── DETAIL RENDER ───────────────────────────────────────────────────────────
-function renderDetail(taskIndex){
-  const t = tasks[taskIndex];
+// ─── DETAIL RENDER ────────────────────────────────────────────
+function renderDetail(taskId){
+  const t = tasks.find(t => t.id === taskId);
   if(!t) return;
   const container = document.getElementById("detailContent");
-  const done  = t.stepsDone || [];
-  const total = (t.steps||[]).length;
+  const done = t.stepsDone || [];
+  const total = t.steps.length;
   const checked = done.filter(Boolean).length;
   const pct = total ? Math.round(checked/total*100) : 0;
+  let cls = 'badge-empty', txt = '0%';
+  if(total){ txt = pct+'%'; cls = pct===100 ? 'badge-done' : pct>0 ? 'badge-partial' : 'badge-empty'; }
 
-  let badgeClass = 'badge-empty', badgeText = '0%';
-  if(total){
-    badgeText = pct + '%';
-    badgeClass = pct === 100 ? 'badge-done' : pct > 0 ? 'badge-partial' : 'badge-empty';
-  }
-
-  const checklist = (t.steps||[]).map((s,idx) => `
+  const stepsHtml = t.steps.map((s,idx) => {
+    const clean = s.replace(/^\d+\.\s*/, '');
+    return `
     <div class="checklist-item">
-      <input type="checkbox" ${done[idx]?'checked':''}
-        onchange="toggleStep(${taskIndex},${idx},this.checked)">
-      <span class="${done[idx]?'checked-text':''}">${escHtml(s)}</span>
-    </div>
-  `).join('');
+      <input type="checkbox" ${done[idx]?'checked':''} onchange="toggleStep('${t.id}',${idx},this.checked)">
+      <span class="${done[idx]?'checked-text':''}">${idx+1}. ${escHtml(clean)}</span>
+    </div>`;
+  }).join('');
 
-  const mats = t.materials||[];
-  const matDone = getPrepDone(taskIndex,'materials',mats.length);
-  const matOpen = isSectionOpen(taskIndex,'materials');
-  const matRows = mats.map((m,idx) => `
+  const matOpen = sectionOpenState[t.id]?.materials || false;
+  const matDone = getPrepDone(t.id,'materials',t.materials.length);
+  const matRows = t.materials.map((m,idx) => `
     <div class="prep-item">
-      <input type="checkbox" ${isPrepChecked(taskIndex,'materials',idx)?'checked':''}
-        onchange="togglePrep(${taskIndex},'materials',${idx},this.checked);event.stopPropagation();">
-      <span style="${isPrepChecked(taskIndex,'materials',idx)?'text-decoration:line-through;color:var(--muted)':''}">${escHtml(m)}</span>
+      <input type="checkbox" ${isPrepChecked(t.id,'materials',idx)?'checked':''} onchange="togglePrep('${t.id}','materials',${idx},this.checked)">
+      <span style="${isPrepChecked(t.id,'materials',idx)?'text-decoration:line-through;color:var(--muted)':''}">${escHtml(m)}</span>
     </div>
   `).join('');
-  const matSection = mats.length ? `
-    <div class="section-toggle">
-      <div class="section-toggle-header${matOpen?' open':''}" onclick="toggleSection('materials',${taskIndex})">
-        📦 Vật tư &nbsp;<span style="color:var(--green);font-size:11px;">${matDone}/${mats.length}</span>
+  const matSection = t.materials.length ? `<div class="section-toggle">
+      <div class="section-toggle-header${matOpen?' open':''}" onclick="toggleSection('${t.id}','materials')">
+        📦 Vật tư, hóa chất &nbsp;<span style="color:var(--green);font-size:0.7rem;">${matDone}/${t.materials.length}</span>
         <span class="section-toggle-arrow">▾</span>
       </div>
       <div class="section-toggle-body${matOpen?' open':''}">${matRows}</div>
     </div>` : '';
 
-  const tools = t.tools||[];
-  const toolDone = getPrepDone(taskIndex,'tools',tools.length);
-  const toolOpen = isSectionOpen(taskIndex,'tools');
-  const toolRows = tools.map((m,idx) => `
+  const toolOpen = sectionOpenState[t.id]?.tools || false;
+  const toolDone = getPrepDone(t.id,'tools',t.tools.length);
+  const toolRows = t.tools.map((m,idx) => `
     <div class="prep-item">
-      <input type="checkbox" ${isPrepChecked(taskIndex,'tools',idx)?'checked':''}
-        onchange="togglePrep(${taskIndex},'tools',${idx},this.checked);event.stopPropagation();">
-      <span style="${isPrepChecked(taskIndex,'tools',idx)?'text-decoration:line-through;color:var(--muted)':''}">${escHtml(m)}</span>
+      <input type="checkbox" ${isPrepChecked(t.id,'tools',idx)?'checked':''} onchange="togglePrep('${t.id}','tools',${idx},this.checked)">
+      <span style="${isPrepChecked(t.id,'tools',idx)?'text-decoration:line-through;color:var(--muted)':''}">${escHtml(m)}</span>
     </div>
   `).join('');
-  const toolSection = tools.length ? `
-    <div class="section-toggle">
-      <div class="section-toggle-header${toolOpen?' open':''}" onclick="toggleSection('tools',${taskIndex})">
-        🔧 Tools &nbsp;<span style="color:var(--accent2);font-size:11px;">${toolDone}/${tools.length}</span>
+  const toolSection = t.tools.length ? `<div class="section-toggle">
+      <div class="section-toggle-header${toolOpen?' open':''}" onclick="toggleSection('${t.id}','tools')">
+        🔧 Tools &nbsp;<span style="color:var(--accent2);font-size:0.7rem;">${toolDone}/${t.tools.length}</span>
         <span class="section-toggle-arrow">▾</span>
       </div>
       <div class="section-toggle-body${toolOpen?' open':''}">${toolRows}</div>
     </div>` : '';
 
-  const photosHtml = (t.photos||[]).length ? `
-    <div class="detail-photos">
-      ${(t.photos||[]).map(src => `<img src="${src}" onclick="viewPhoto('${src}')" loading="lazy">`).join('')}
-    </div>` : '';
+  const photosHtml = t.photos.length ? `<div class="detail-photos">${t.photos.map(src => `<img src="${src}" onclick="viewPhoto('${src}')" loading="lazy">`).join('')}</div>` : '';
 
   container.innerHTML = `
     <div class="detail-header">
       <div style="flex:1;min-width:0;">
         <div class="detail-title">${escHtml(t.name||'(chưa đặt tên)')}</div>
-        <div class="detail-sub">${escHtml(t.aircraft||'')}</div>
+        <div class="detail-sub">${escHtml(t.aircraft||'')} ${t.ammRef ? '· '+escHtml(t.ammRef) : ''}</div>
       </div>
-      <span class="card-badge ${badgeClass}" style="flex-shrink:0;">${badgeText}</span>
+      <span class="card-badge ${cls}">${txt}</span>
     </div>
     ${total ? `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>` : ''}
-    ${checklist}
-    ${matSection}
-    ${toolSection}
-    ${photosHtml}
+    ${stepsHtml}
+    ${matSection} ${toolSection} ${photosHtml}
     <div class="detail-actions">
-      <button class="btn-edit-big" onclick="goEditFromDetail(${taskIndex})">✏️  Chỉnh sửa</button>
-      <button class="btn-back-detail" onclick="goList()">← Quay lại danh sách</button>
-    </div>
-  `;
+      <button class="btn-edit-big" onclick="goEditFromDetail('${t.id}')">✏️  Chỉnh sửa</button>
+      <button class="btn-back-detail" onclick="goList()">← Quay lại</button>
+      <button class="btn-reset-detail" onclick="resetTask('${t.id}')">↺ Reset</button>
+      <button class="btn-delete" onclick="deleteTask('${t.id}')">🗑 Xoá</button>
+    </div>`;
 }
 
 function viewPhoto(src){
@@ -759,193 +496,282 @@ function viewPhoto(src){
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:999;display:flex;align-items:center;justify-content:center;cursor:pointer;';
   overlay.onclick = () => overlay.remove();
   const img = document.createElement('img');
-  img.src = src;
-  img.style.cssText = 'max-width:95vw;max-height:95vh;border-radius:8px;object-fit:contain;';
+  img.src = src; img.style.cssText = 'max-width:95vw;max-height:95vh;border-radius:0.5rem;object-fit:contain;';
   overlay.appendChild(img);
   document.body.appendChild(overlay);
 }
 
-// ─── SECTION TOGGLE ──────────────────────────────────────────────────────────
-function isSectionOpen(taskIndex, type){
-  const key = String(taskIndex);
-  return !!(sectionOpenState[key] && sectionOpenState[key][type]);
+function toggleSection(taskId, type){
+  if(!sectionOpenState[taskId]) sectionOpenState[taskId] = {};
+  sectionOpenState[taskId][type] = !sectionOpenState[taskId][type];
+  saveAll();
+  renderDetail(taskId);
 }
-function toggleSection(type, taskIndex){
-  const key = String(taskIndex);
-  if(!sectionOpenState[key]) sectionOpenState[key] = {};
-  sectionOpenState[key][type] = !sectionOpenState[key][type];
-  saveSectionState();
-  renderDetail(taskIndex);
+function toggleStep(taskId, idx, val){
+  const t = tasks.find(t => t.id === taskId);
+  if(!t) return;
+  if(!t.stepsDone) t.stepsDone = [];
+  t.stepsDone[idx] = val;
+  saveAll().then(() => renderDetail(taskId));
+}
+function togglePrep(taskId, type, idx, val){
+  if(!prepState[taskId]) prepState[taskId] = {};
+  if(!prepState[taskId][type]) prepState[taskId][type] = {};
+  prepState[taskId][type][idx] = val;
+  saveAll().then(() => renderDetail(taskId));
+}
+function getPrepDone(taskId, type, total){
+  const s = prepState[taskId]?.[type];
+  if(!s) return 0;
+  let cnt = 0;
+  for(let i=0;i<total;i++) if(s[i]) cnt++;
+  return cnt;
+}
+function isPrepChecked(taskId, type, idx){ return !!(prepState[taskId]?.[type]?.[idx]); }
+
+function resetTask(taskId){
+  if(!confirm("Reset tiến độ checklist & vật tư?")) return;
+  const t = tasks.find(t => t.id === taskId);
+  if(!t) return;
+  t.stepsDone = [];
+  delete prepState[taskId];
+  saveAll().then(() => {
+    showToast("Đã reset task");
+    if(document.getElementById('detailView').style.display === 'block') renderDetail(taskId);
+    renderList();
+  });
+}
+async function deleteTask(taskId){
+  if(!confirm("Xoá vĩnh viễn task này?")) return;
+  tasks = tasks.filter(t => t.id !== taskId);
+  delete prepState[taskId];
+  delete sectionOpenState[taskId];
+  await saveAll();
+  if(navHistory[navPos]?.view === 'detail' && navHistory[navPos]?.taskId === taskId){
+    navHistory = navHistory.filter(p => !(p.view==='detail' && p.taskId===taskId));
+    navPos = Math.min(navPos, navHistory.length-1);
+    applyNav(navHistory[navPos] || {view:'list'});
+  } else { renderList(); }
+  updateNavBtns();
+  showToast("Đã xoá task");
 }
 
-// ─── CHECKLIST TOGGLE ─────────────────────────────────────────────────────────
-function toggleStep(taskIndex, stepIndex, val){
-  if(!tasks[taskIndex].stepsDone) tasks[taskIndex].stepsDone = [];
-  tasks[taskIndex].stepsDone[stepIndex] = val;
-  if(saveDB()) { renderDetail(taskIndex); }
-  else { /* revert? */ }
-}
+// ─── EDITOR ────────────────────────────────────────────────────
+let currentEditId = null;
+let originalTaskData = null;
 
-// ─── PREP STATE ───────────────────────────────────────────────────────────────
-function togglePrep(taskIndex, type, idx, val){
-  const key = String(taskIndex);
-  if(!prepState[key]) prepState[key] = {};
-  if(!prepState[key][type]) prepState[key][type] = {};
-  prepState[key][type][idx] = val;
-  savePrepDB();
-  renderDetail(taskIndex);
-}
-
-function getPrepDone(taskIndex, type, total){
-  const key = String(taskIndex);
-  if(!prepState[key] || !prepState[key][type]) return 0;
-  let count = 0;
-  for(let i=0;i<total;i++) if(prepState[key][type][i]) count++;
-  return count;
-}
-function isPrepChecked(taskIndex, type, idx){
-  const key = String(taskIndex);
-  return !!(prepState[key] && prepState[key][type] && prepState[key][type][idx]);
-}
-
-// ─── EDITOR ───────────────────────────────────────────────────────────────────
-let currentEdit = null;
-
-function loadEditor(taskIndex){
-  currentEdit = taskIndex;
+function loadEditor(taskId){
+  currentEditId = taskId;
   document.getElementById("photos").innerHTML = "";
-
-  if(taskIndex === null){
-    document.getElementById("fName").value = "";
-    document.getElementById("fAircraft").value = "";
-    document.getElementById("fSteps").value = "";
-    document.getElementById("fMaterials").value = "";
-    document.getElementById("fTools").value = "";
-  } else {
-    const t = tasks[taskIndex];
-    document.getElementById("fName").value     = t.name || "";
-    document.getElementById("fAircraft").value = t.aircraft || "";
-    document.getElementById("fSteps").value    = (t.steps||[]).join("\n");
-    document.getElementById("fMaterials").value = (t.materials||[]).join("\n");
-    document.getElementById("fTools").value    = (t.tools||[]).join("\n");
-    (t.photos||[]).forEach(src => addPhotoPreview(src));
-  }
+  const t = taskId ? tasks.find(t => t.id === taskId) : null;
+  document.getElementById("fName").value = t ? t.name : "";
+  document.getElementById("fAircraft").value = t ? t.aircraft : "";
+  document.getElementById("fAmm").value = t ? t.ammRef || "" : "";
+  document.getElementById("fSteps").value = t ? t.steps.join("\n") : "";
+  document.getElementById("fMaterials").value = t ? t.materials.join("\n") : "";
+  document.getElementById("fTools").value = t ? t.tools.join("\n") : "";
+  if(t) t.photos.forEach(src => addPhotoPreview(src));
+  originalTaskData = getEditorData();
+  autoResizeTextareas();
 }
 
-function saveTask(){
+function getEditorData(){
+  return {
+    name: document.getElementById("fName").value,
+    aircraft: document.getElementById("fAircraft").value,
+    ammRef: document.getElementById("fAmm").value,
+    steps: document.getElementById("fSteps").value,
+    materials: document.getElementById("fMaterials").value,
+    tools: document.getElementById("fTools").value,
+    photos: [...document.querySelectorAll("#photos img")].map(i => i.src)
+  };
+}
+function isEditorDirty(){
+  if(currentEditId === undefined) return false;
+  return JSON.stringify(getEditorData()) !== JSON.stringify(originalTaskData);
+}
+
+async function saveTask(){
   const photos = [...document.querySelectorAll("#photos img")].map(i => i.src);
   const obj = {
-    name:      document.getElementById("fName").value.trim(),
-    aircraft:  document.getElementById("fAircraft").value.trim(),
-    steps:     document.getElementById("fSteps").value.split("\n").filter(Boolean),
+    id: currentEditId || Date.now().toString(),
+    name: document.getElementById("fName").value.trim(),
+    aircraft: document.getElementById("fAircraft").value.trim(),
+    ammRef: document.getElementById("fAmm").value.trim(),
+    steps: document.getElementById("fSteps").value.split("\n").filter(Boolean),
     materials: document.getElementById("fMaterials").value.split("\n").filter(Boolean),
-    tools:     document.getElementById("fTools").value.split("\n").filter(Boolean),
+    tools: document.getElementById("fTools").value.split("\n").filter(Boolean),
     photos,
-    stepsDone: currentEdit !== null && tasks[currentEdit] && tasks[currentEdit].stepsDone
-               ? tasks[currentEdit].stepsDone : [],
-    createdAt: currentEdit !== null && tasks[currentEdit] && tasks[currentEdit].createdAt
-               ? tasks[currentEdit].createdAt : Date.now(),
+    stepsDone: currentEditId ? (tasks.find(t => t.id === currentEditId)?.stepsDone || []) : [],
+    createdAt: currentEditId ? (tasks.find(t => t.id === currentEditId)?.createdAt || Date.now()) : Date.now()
   };
-
   if(!obj.name){ showToast("⚠️ Vui lòng nhập tên task."); return; }
-
-  if(currentEdit === null){
-    tasks.unshift(obj);
+  if(currentEditId){
+    const idx = tasks.findIndex(t => t.id === currentEditId);
+    if(idx !== -1) tasks[idx] = obj;
+  } else { tasks.unshift(obj); }
+  if(!(await saveAll())) return;
+  showToast("✅ Đã lưu!");
+  if(navHistory.length>=2 && navHistory[navPos-1]?.view === 'detail' && navHistory[navPos-1]?.taskId === obj.id){
+    navHistory = navHistory.slice(0, navPos); navPos--;
+    pushNav({view:'detail', taskId: obj.id});
+    showDetailView(obj.id);
   } else {
-    tasks[currentEdit] = obj;
-  }
-
-  if(!saveDB()){
-    // Lưu thất bại, hoàn tác việc thêm/sửa?
-    if(currentEdit === null) tasks.shift(); // rollback
-    return;
-  }
-
-  showToast("✅ Đã lưu task!");
-
-  // Điều hướng sau lưu: quay lại trang trước đó (detail hoặc list)
-  if(navHistory.length >= 2 && navHistory[navPos - 1] && navHistory[navPos - 1].view === 'detail'){
-    const prevPage = navHistory[navPos - 1];
-    navHistory = navHistory.slice(0, navPos);
-    navPos = navHistory.length - 1;
-    pushNav({view:'detail', taskIndex: prevPage.taskIndex});
-    showDetailView(prevPage.taskIndex);
-  } else {
-    navHistory = navHistory.slice(0, navPos);
-    navPos = navHistory.length - 1;
+    navHistory = navHistory.slice(0, navPos); navPos--;
     pushNav({view:'list'});
     showListView();
   }
 }
 
-// ─── PHOTOS ───────────────────────────────────────────────────────────────────
-document.getElementById("photoInput").addEventListener("change", e => {
-  [...e.target.files].forEach(file => {
+// ─── PHOTO COMPRESSION ──────────────────────────────────────────
+function compressImage(file){
+  return new Promise((resolve) => {
     const reader = new FileReader();
-    reader.onload = () => addPhotoPreview(reader.result);
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const maxWidth = 1600;
+        let { width, height } = img;
+        if(width > maxWidth){
+          height = Math.round((maxWidth / width) * height);
+          width = maxWidth;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      };
+      img.src = reader.result;
+    };
     reader.readAsDataURL(file);
   });
+}
+
+document.getElementById("photoInput").addEventListener("change", async e => {
+  showToast("Đang nén ảnh...");
+  const files = [...e.target.files];
+  for(const file of files){
+    const compressed = await compressImage(file);
+    addPhotoPreview(compressed);
+  }
   e.target.value = "";
+  showToast("✅ Đã thêm ảnh");
 });
 
 function addPhotoPreview(src){
+  const container = document.getElementById("photos");
+  const div = document.createElement("div");
+  div.className = "photo-preview";
   const img = document.createElement("img");
   img.src = src;
-  img.style.cssText = "width:100%;border-radius:8px;margin-top:8px;display:block;";
-  document.getElementById("photos").appendChild(img);
+  const btn = document.createElement("button");
+  btn.className = "photo-remove";
+  btn.innerHTML = "✕";
+  btn.onclick = (e) => { e.stopPropagation(); div.remove(); };
+  div.appendChild(img); div.appendChild(btn);
+  container.appendChild(div);
 }
 
-// ─── SWIPE NAVIGATION ─────────────────────────────────────────────────────────
-let touchStartX = 0, touchStartY = 0, swipeActive = false;
+// ─── AUTO NUMBERING ──────────────────────────────────────────────
+['fSteps','fMaterials','fTools'].forEach(id => {
+  const ta = document.getElementById(id);
+  ta.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      const textarea = e.target;
+      const start = textarea.selectionStart;
+      const text = textarea.value;
+      const before = text.substring(0, start);
+      const after = text.substring(start);
+      const currentLines = before.split('\n');
+      const currentLineIndex = currentLines.length - 1;
+      const currentLine = currentLines[currentLineIndex] || '';
 
-document.addEventListener('touchstart', e => {
-  if(e.touches.length === 1){
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
-    swipeActive = true;
-  }
-}, {passive: true});
-
-document.addEventListener('touchmove', e => {
-  if(!swipeActive) return;
-  const dx = e.touches[0].clientX - touchStartX;
-  const dy = e.touches[0].clientY - touchStartY;
-  const absDx = Math.abs(dx), absDy = Math.abs(dy);
-  if(absDx > absDy && absDx > 10){
-    const hintLeft = document.getElementById('swipeLeft');
-    const hintRight = document.getElementById('swipeRight');
-    if(touchStartX < 50 && dx > 30 && navPos > 0){
-      hintLeft.style.opacity = Math.min((dx-30)/40, 1);
-    } else if(touchStartX > window.innerWidth - 50 && dx < -30 && navPos < navHistory.length - 1){
-      hintRight.style.opacity = Math.min((-dx-30)/40, 1);
-    } else {
-      hintLeft.style.opacity = 0;
-      hintRight.style.opacity = 0;
+      const match = currentLine.match(/^(\d+)\.\s/);
+      if (match) {
+        const nextNum = parseInt(match[1]) + 1;
+        textarea.value = before + '\n' + nextNum + '. ' + after;
+        textarea.selectionStart = textarea.selectionEnd = start + 2 + String(nextNum).length + 2;
+      } else {
+        const newBefore = currentLines.slice(0, -1).concat('1. ' + currentLine).join('\n');
+        textarea.value = newBefore + '\n2. ' + after;
+        const offset = newBefore.length + 2 + '2. '.length;
+        textarea.selectionStart = textarea.selectionEnd = offset;
+      }
+      autoResizeTextareas();
     }
-  }
-}, {passive: true});
+  });
+});
 
+function autoResizeTextareas(){
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
+  });
+}
+document.addEventListener('input', e => {
+  if(e.target.tagName === 'TEXTAREA') autoResizeTextareas();
+});
+
+// ─── SETTINGS ──────────────────────────────────────────────────
+function openSettings(){ document.getElementById('settingsModal').style.display = 'flex'; }
+function closeSettings(){ document.getElementById('settingsModal').style.display = 'none'; }
+
+async function exportData(){
+  const data = { tasks, prepState, sectionOpenState };
+  const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `mx_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  showToast("📥 Đã tải file sao lưu");
+}
+
+async function importData(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(data.tasks && Array.isArray(data.tasks)){
+        tasks = data.tasks;
+        prepState = data.prepState || {};
+        sectionOpenState = data.sectionOpenState || {};
+        await saveAll();
+        showToast("✅ Nhập thành công!");
+        navHistory = [{view:'list'}]; navPos = 0;
+        showListView(); updateNavBtns();
+      } else throw new Error("Sai định dạng");
+    } catch(ex){ showToast("❌ File không hợp lệ"); }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ─── SWIPE ──────────────────────────────────────────────────────
+let touchStartX=0, touchStartY=0;
+document.addEventListener('touchstart', e => {
+  if(e.touches.length===1){ touchStartX=e.touches[0].clientX; }
+}, {passive:true});
 document.addEventListener('touchend', e => {
-  document.getElementById('swipeLeft').style.opacity = 0;
-  document.getElementById('swipeRight').style.opacity = 0;
-  if(!swipeActive) return;
-  swipeActive = false;
-  const dx = (e.changedTouches[0]?.clientX || touchStartX) - touchStartX;
-  const dy = (e.changedTouches[0]?.clientY || touchStartY) - touchStartY;
-  const absDx = Math.abs(dx), absDy = Math.abs(dy);
-  if(absDx > absDy && absDx > 50){
-    if(touchStartX < 60 && dx > 40) historyBack();
-    else if(touchStartX > window.innerWidth - 60 && dx < -40) historyFwd();
+  const dx = (e.changedTouches[0]?.clientX||touchStartX) - touchStartX;
+  if(Math.abs(dx) > 50){
+    if(touchStartX < 50 && dx > 40) historyBack();
+    else if(touchStartX > window.innerWidth-50 && dx < -40) historyFwd();
   }
 });
 
-function escHtml(s){
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-showListView();
-updateNavBtns();
+// ─── INIT ───────────────────────────────────────────────────────
+(async function(){
+  await loadAll();
+  showListView();
+  updateNavBtns();
+  autoResizeTextareas();
+})();
 </script>
 </body>
 </html>
