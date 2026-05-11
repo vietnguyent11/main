@@ -131,29 +131,75 @@ function saveDB(){
 localStorage.setItem("mx_tasks",JSON.stringify(tasks))
 }
 
+function toggleCheck(taskIndex,stepIndex,val){
+
+if(!tasks[taskIndex].stepsDone){
+tasks[taskIndex].stepsDone=[]
+}
+
+tasks[taskIndex].stepsDone[stepIndex]=val
+
+saveDB()
+
+render()
+
+}
+
 function render(){
 
-const q=document.getElementById("search").value.toLowerCase()
-
+const search=document.getElementById("search")
 const list=document.getElementById("list")
+const editor=document.getElementById("editor")
+
+const q=search.value.toLowerCase()
 
 list.innerHTML=""
 
-tasks
-.filter(t=>t.name.toLowerCase().includes(q))
-.forEach((t,i)=>{
+const filtered=tasks.filter(t=>
+(t.name||"").toLowerCase().includes(q) ||
+(t.aircraft||"").toLowerCase().includes(q)
+)
+
+filtered.forEach((t,i)=>{
 
 const div=document.createElement("div")
 
 div.className="card"
 
-div.innerHTML=`
-<h3>${t.name}</h3>
-<div class="small">${t.aircraft||""}</div>
-<div class="small">${t.steps.length} bước</div>
-`
+const done=t.stepsDone||[]
 
-div.onclick=()=>openTask(i)
+const total=t.steps.length
+
+const checked=done.filter(Boolean).length
+
+const checklist=t.steps.map((s,idx)=>`
+<label style="display:flex;gap:10px;margin-top:10px">
+<input type="checkbox"
+${done[idx]?"checked":""}
+onchange="toggleCheck(${i},${idx},this.checked)">
+<span>${s}</span>
+</label>
+`).join("")
+
+div.innerHTML=`
+
+<h3>${t.name}</h3>
+
+<div class="small">${t.aircraft||""}</div>
+
+<div class="small">
+${checked}/${total} checklist
+</div>
+
+${checklist}
+
+<button
+style="margin-top:12px"
+onclick="event.stopPropagation();openTask(${i})">
+✏️ Edit
+</button>
+
+`
 
 list.appendChild(div)
 
@@ -166,6 +212,9 @@ function newTask(){
 current=null
 
 document.getElementById("editor").classList.remove("hidden")
+
+document.getElementById("search").style.display="none"
+document.getElementById("list").style.display="none"
 
 document.getElementById("name").value=""
 document.getElementById("aircraft").value=""
@@ -183,6 +232,9 @@ current=i
 const t=tasks[i]
 
 document.getElementById("editor").classList.remove("hidden")
+
+document.getElementById("search").style.display="none"
+document.getElementById("list").style.display="none"
 
 document.getElementById("name").value=t.name
 document.getElementById("aircraft").value=t.aircraft
@@ -258,7 +310,12 @@ materials:document.getElementById("materials").value.split("\n").filter(Boolean)
 
 tools:document.getElementById("tools").value.split("\n").filter(Boolean),
 
-photos
+photos,
+
+stepsDone:
+current!==null && tasks[current].stepsDone
+? tasks[current].stepsDone
+: []
 
 }
 
@@ -269,6 +326,10 @@ tasks[current]=obj
 }
 
 saveDB()
+
+document.getElementById("search").style.display="block"
+document.getElementById("list").style.display="block"
+document.getElementById("editor").classList.add("hidden")
 
 render()
 
