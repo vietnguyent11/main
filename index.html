@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maintenance Vault</title>
+
+<meta name="theme-color" content="#111111">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<style>
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#111;
+  color:white;
+}
+
+header{
+  padding:20px;
+  font-size:28px;
+  font-weight:bold;
+  border-bottom:1px solid #222;
+}
+
+.container{
+  padding:20px;
+}
+
+input,textarea{
+  width:100%;
+  box-sizing:border-box;
+  margin-top:10px;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:#1f1f1f;
+  color:white;
+  font-size:16px;
+}
+
+button{
+  width:100%;
+  margin-top:12px;
+  padding:14px;
+  border:none;
+  border-radius:16px;
+  background:#2563eb;
+  color:white;
+  font-size:16px;
+}
+
+.card{
+  background:#1a1a1a;
+  border-radius:20px;
+  padding:16px;
+  margin-top:20px;
+}
+
+img{
+  width:100%;
+  border-radius:16px;
+  margin-top:10px;
+}
+
+.small{
+  font-size:14px;
+  color:#aaa;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+✈️ Maintenance Vault
+</header>
+
+<div class="container">
+
+<input id="search" placeholder="Search task..." oninput="render()">
+
+<input id="title" placeholder="Task title">
+
+<input id="aircraft" placeholder="Aircraft">
+
+<textarea id="notes" placeholder="Notes"></textarea>
+
+<input type="file" accept="image/*" capture="environment" id="photo">
+
+<button onclick="saveTask()">
+Save Task
+</button>
+
+<div id="tasks"></div>
+
+</div>
+
+<script>
+let tasks = JSON.parse(localStorage.getItem("maintenance_tasks") || "[]");
+
+function persist(){
+  localStorage.setItem(
+    "maintenance_tasks",
+    JSON.stringify(tasks)
+  );
+}
+
+function saveTask(){
+
+  const title = document.getElementById("title").value;
+  const aircraft = document.getElementById("aircraft").value;
+  const notes = document.getElementById("notes").value;
+  const file = document.getElementById("photo").files[0];
+
+  if(!title) return;
+
+  if(file){
+
+    const reader = new FileReader();
+
+    reader.onload = function(){
+
+      tasks.unshift({
+        id:Date.now(),
+        title,
+        aircraft,
+        notes,
+        photo:reader.result,
+        created:new Date().toLocaleString()
+      });
+
+      persist();
+      clearInputs();
+      render();
+    }
+
+    reader.readAsDataURL(file);
+
+  }else{
+
+    tasks.unshift({
+      id:Date.now(),
+      title,
+      aircraft,
+      notes,
+      created:new Date().toLocaleString()
+    });
+
+    persist();
+    clearInputs();
+    render();
+  }
+}
+
+function clearInputs(){
+  document.getElementById("title").value="";
+  document.getElementById("aircraft").value="";
+  document.getElementById("notes").value="";
+  document.getElementById("photo").value="";
+}
+
+function deleteTask(id){
+
+  if(!confirm("Delete task?")) return;
+
+  tasks = tasks.filter(t=>t.id !== id);
+
+  persist();
+  render();
+}
+
+function render(){
+
+  const search = document
+    .getElementById("search")
+    .value
+    .toLowerCase();
+
+  let html = "";
+
+  tasks
+    .filter(task=>
+      JSON.stringify(task)
+      .toLowerCase()
+      .includes(search)
+    )
+    .forEach(task=>{
+
+      html += `
+      <div class="card">
+
+        <h2>${task.title}</h2>
+
+        <div class="small">
+          ${task.aircraft || "No aircraft"}
+        </div>
+
+        <p>${task.notes || ""}</p>
+
+        ${task.photo
+          ? `<img src="${task.photo}">`
+          : ""
+        }
+
+        <div class="small">
+          ${task.created}
+        </div>
+
+        <button onclick="deleteTask(${task.id})">
+          Delete
+        </button>
+
+      </div>
+      `;
+    });
+
+  document.getElementById("tasks").innerHTML = html;
+}
+
+render();
+</script>
+
+</body>
+</html>
