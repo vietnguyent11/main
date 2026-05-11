@@ -2,344 +2,951 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>MX Tasks</title>
-
 <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
 :root{
---bg:#f5f5f4;
---card:#fff;
---text:#111;
---border:#ddd;
---blue:#1a56a0;
+  --bg:#0e1117;
+  --surface:#161b27;
+  --card:#1c2333;
+  --border:#2a3347;
+  --text:#e8eaf0;
+  --muted:#6b7a99;
+  --accent:#3b82f6;
+  --accent2:#22d3ee;
+  --green:#10b981;
+  --orange:#f59e0b;
+  --red:#ef4444;
+  --radius:12px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
 }
 
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-font-family:-apple-system,sans-serif;
-}
+*{ box-sizing:border-box; margin:0; padding:0; }
 
 body{
-background:var(--bg);
-color:var(--text);
+  background:var(--bg);
+  color:var(--text);
+  font-family:'IBM Plex Sans',sans-serif;
+  min-height:100vh;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  -webkit-user-select:none;
+  overscroll-behavior:contain;
 }
 
+/* ── HEADER ─────────────────────────────────────────── */
 header{
-padding:16px;
-background:#fff;
-border-bottom:1px solid var(--border);
-display:flex;
-justify-content:space-between;
-align-items:center;
-position:sticky;
-top:0;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:10px 12px;
+  position:sticky;
+  top:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.header-spacer{ flex:1; }
+
+.logo{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:14px;
+  font-weight:600;
+  color:var(--accent2);
+  letter-spacing:.04em;
+  white-space:nowrap;
 }
 
-button{
-border:none;
-background:var(--blue);
-color:#fff;
-padding:10px 14px;
-border-radius:10px;
-font-size:15px;
+.nav-btn{
+  background:var(--card);
+  border:1px solid var(--border);
+  color:var(--text);
+  width:38px; height:38px;
+  border-radius:10px;
+  font-size:16px;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:.15s;
+  flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
 }
+.nav-btn:hover:not(:disabled){ background:var(--border); }
+.nav-btn:active:not(:disabled){ transform:scale(.93); }
+.nav-btn:disabled{ opacity:.25; cursor:default; pointer-events:none; }
 
-.container{
-padding:16px;
+.btn-add{
+  background:var(--accent);
+  border:none;
+  color:#fff;
+  padding:9px 15px;
+  border-radius:10px;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  transition:.15s;
+  white-space:nowrap;
+  font-family:'IBM Plex Sans',sans-serif;
+  -webkit-tap-highlight-color:transparent;
 }
+.btn-add:hover{ background:#2563eb; }
+.btn-add:active{ transform:scale(.93); }
 
+/* ── CONTAINER ──────────────────────────────────────── */
+.container{ padding:12px; max-width:640px; margin:0 auto; }
+
+/* ── SEARCH ─────────────────────────────────────────── */
+#searchWrap{ margin-bottom:12px; }
+#search{
+  width:100%;
+  background:var(--card);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:11px 14px;
+  border-radius:var(--radius);
+  font-size:15px;
+  font-family:'IBM Plex Sans',sans-serif;
+  transition:.15s;
+}
+#search::placeholder{ color:var(--muted); }
+#search:focus{ outline:none; border-color:var(--accent); }
+
+/* ── CARD (list view – gọn) ─────────────────────────── */
 .card{
-background:var(--card);
-padding:14px;
-border-radius:14px;
-margin-bottom:12px;
-border:1px solid var(--border);
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:13px 14px;
+  margin-bottom:9px;
+  transition:.15s;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.card:hover{ border-color:var(--accent); }
+.card:active{ transform:scale(.98); }
+
+.card-info{ flex:1; min-width:0; }
+.card-title{ font-size:15px; font-weight:600; line-height:1.3; }
+.card-sub{ font-size:12px; color:var(--muted); margin-top:2px; font-family:'IBM Plex Mono',monospace; }
+
+.card-badge{
+  font-size:11px;
+  font-family:'IBM Plex Mono',monospace;
+  padding:3px 8px;
+  border-radius:20px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.badge-done{ background:#10b98122; color:var(--green); }
+.badge-partial{ background:#f59e0b22; color:var(--orange); }
+.badge-empty{ background:#2a3347; color:var(--muted); }
+
+.btn-edit-sm{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--muted);
+  padding:5px 11px;
+  border-radius:7px;
+  font-size:12px;
+  cursor:pointer;
+  transition:.15s;
+  white-space:nowrap;
+  flex-shrink:0;
+  font-family:'IBM Plex Sans',sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-edit-sm:hover{ border-color:var(--accent); color:var(--text); }
+.btn-edit-sm:active{ transform:scale(.93); }
+
+/* ── DETAIL VIEW ────────────────────────────────────── */
+.detail-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:6px;
+}
+.detail-title{ font-size:18px; font-weight:600; line-height:1.3; flex:1; }
+.detail-sub{ font-size:13px; color:var(--muted); font-family:'IBM Plex Mono',monospace; margin-bottom:4px; }
+
+.progress-bar{
+  height:5px;
+  background:var(--border);
+  border-radius:5px;
+  margin:10px 0 12px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  border-radius:5px;
+  transition:width .3s;
 }
 
-input,textarea{
-width:100%;
-padding:12px;
-margin-top:8px;
-margin-bottom:12px;
-border-radius:10px;
-border:1px solid #ccc;
-font-size:16px;
+/* checklist in detail */
+.checklist-item{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:8px 0;
+  border-bottom:1px solid var(--border);
+  font-size:14px;
+}
+.checklist-item:last-child{ border-bottom:none; }
+
+.checklist-item input[type=checkbox]{
+  width:18px; height:18px;
+  margin-top:2px;
+  accent-color:var(--accent2);
+  cursor:pointer;
+  flex-shrink:0;
+}
+.checklist-item span{ flex:1; line-height:1.4; }
+.checked-text{ text-decoration:line-through; color:var(--muted); }
+
+/* section toggle in detail */
+.section-toggle{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  margin-top:10px;
+  overflow:hidden;
+}
+.section-toggle-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 13px;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:600;
+  color:var(--muted);
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.section-toggle-header:hover{ color:var(--text); }
+.section-toggle-header:active{ background:rgba(255,255,255,0.03); }
+.section-toggle-body{
+  display:none;
+  padding:2px 13px 10px;
+}
+.section-toggle-body.open{ display:block; }
+.section-toggle-arrow{
+  transition:.2s;
+  display:inline-block;
+  font-size:12px;
+}
+.section-toggle-header.open .section-toggle-arrow{ transform:rotate(180deg); }
+
+.prep-item{
+  display:flex; align-items:center; gap:10px;
+  padding:7px 0;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.prep-item:last-child{ border-bottom:none; }
+.prep-item input[type=checkbox]{
+  width:17px; height:17px;
+  accent-color:var(--green);
+  cursor:pointer;
+  flex-shrink:0;
 }
 
-.photo{
-width:100%;
-border-radius:10px;
-margin-top:10px;
+/* photos in detail */
+.detail-photos{ margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
+.detail-photos img{
+  width:calc(50% - 4px);
+  border-radius:8px;
+  object-fit:cover;
+  aspect-ratio:4/3;
+  cursor:pointer;
 }
 
-.small{
-font-size:13px;
-opacity:.7;
-margin-top:6px;
+/* detail actions */
+.detail-actions{
+  display:flex;
+  gap:8px;
+  margin-top:14px;
+}
+.btn-edit-big{
+  flex:1;
+  background:var(--accent);
+  border:none;
+  color:#fff;
+  padding:12px;
+  border-radius:10px;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  font-family:'IBM Plex Sans',sans-serif;
+  text-align:center;
+  transition:.15s;
+}
+.btn-edit-big:hover{ background:#2563eb; }
+.btn-edit-big:active{ transform:scale(.95); }
+.btn-back-detail{
+  flex:1;
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--muted);
+  padding:12px;
+  border-radius:10px;
+  font-size:14px;
+  cursor:pointer;
+  font-family:'IBM Plex Sans',sans-serif;
+  text-align:center;
+  transition:.15s;
+}
+.btn-back-detail:hover{ border-color:var(--text); color:var(--text); }
+.btn-back-detail:active{ transform:scale(.95); }
+
+/* ── EDITOR ─────────────────────────────────────────── */
+#editor{ display:none; }
+
+.field-label{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.08em;
+  color:var(--muted);
+  text-transform:uppercase;
+  margin-bottom:5px;
+  margin-top:14px;
+}
+.field-label:first-child{ margin-top:0; }
+
+#editor input[type=text],
+#editor textarea{
+  width:100%;
+  background:var(--card);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:11px 13px;
+  border-radius:var(--radius);
+  font-size:14px;
+  font-family:'IBM Plex Sans',sans-serif;
+  resize:vertical;
+  transition:.15s;
+}
+#editor input[type=text]:focus,
+#editor textarea:focus{ outline:none; border-color:var(--accent); }
+#editor textarea{ min-height:90px; }
+
+.file-label{
+  display:block;
+  background:var(--surface);
+  border:1px dashed var(--border);
+  border-radius:var(--radius);
+  padding:14px;
+  text-align:center;
+  cursor:pointer;
+  font-size:13px;
+  color:var(--muted);
+  transition:.15s;
+}
+.file-label:hover{ border-color:var(--accent); color:var(--text); }
+#photoInput{ display:none; }
+
+#photos img{
+  width:100%;
+  border-radius:8px;
+  margin-top:8px;
 }
 
-.hidden{
-display:none;
+.btn-save{
+  width:100%;
+  background:var(--accent);
+  border:none;
+  color:#fff;
+  padding:13px;
+  border-radius:var(--radius);
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:16px;
+  font-family:'IBM Plex Sans',sans-serif;
+  transition:.15s;
 }
+.btn-save:hover{ background:#2563eb; }
+.btn-save:active{ transform:scale(.95); }
+
+.btn-back-editor{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--muted);
+  padding:10px 16px;
+  border-radius:10px;
+  font-size:13px;
+  cursor:pointer;
+  margin-top:8px;
+  font-family:'IBM Plex Sans',sans-serif;
+  transition:.15s;
+  width:100%;
+}
+.btn-back-editor:hover{ border-color:var(--text); color:var(--text); }
+
+.empty{
+  text-align:center;
+  color:var(--muted);
+  padding:48px 0;
+  font-size:14px;
+}
+
+/* ── SWIPE INDICATOR ────────────────────────────────── */
+.swipe-hint{
+  position:fixed;
+  top:50%;
+  transform:translateY(-50%);
+  width:32px;
+  height:32px;
+  background:var(--accent);
+  color:#fff;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .2s;
+  z-index:200;
+}
+.swipe-hint.left{ left:8px; }
+.swipe-hint.right{ right:8px; }
 </style>
 </head>
-
 <body>
 
+<!-- ── HEADER ────────────────────────────────────────────── -->
 <header>
-<h3>✈️ MX Tasks</h3>
-<button onclick="newTask()">+ Task</button>
+  <div class="header-left">
+    <button class="nav-btn" id="btnBack" onclick="historyBack()" disabled title="Quay lại">◀</button>
+  </div>
+  <div class="logo">✈ MX TASKS</div>
+  <div class="header-spacer"></div>
+  <div class="header-right">
+    <button class="nav-btn" id="btnFwd" onclick="historyFwd()" disabled title="Tiến">▶</button>
+    <button class="btn-add" id="btnAddTask" onclick="goNewTask()">+ Task</button>
+  </div>
 </header>
 
+<!-- ── SWIPE HINTS ───────────────────────────────────────── -->
+<div class="swipe-hint left" id="swipeLeft">◀</div>
+<div class="swipe-hint right" id="swipeRight">▶</div>
+
+<!-- ── CONTAINER ─────────────────────────────────────────── -->
 <div class="container">
 
-<input id="search" placeholder="Tìm task..." oninput="render()">
+  <!-- LIST VIEW -->
+  <div id="listView">
+    <div id="searchWrap">
+      <input id="search" placeholder="🔍  Tìm task, tàu..." oninput="renderList()">
+    </div>
+    <div id="list"></div>
+  </div>
 
-<div id="list"></div>
+  <!-- DETAIL VIEW -->
+  <div id="detailView" style="display:none;">
+    <div id="detailContent"></div>
+  </div>
 
-<div id="editor" class="hidden">
+  <!-- EDITOR VIEW -->
+  <div id="editor">
+    <div class="field-label">Tên task</div>
+    <input type="text" id="fName" placeholder="VD: Thay lốp bánh trước">
 
-<input id="name" placeholder="Tên task">
+    <div class="field-label">Aircraft / Số hiệu</div>
+    <input type="text" id="fAircraft" placeholder="VD: VN-A123">
 
-<input id="aircraft" placeholder="Aircraft">
+    <div class="field-label">Checklist (mỗi dòng 1 bước)</div>
+    <textarea id="fSteps" placeholder="Bước 1&#10;Bước 2&#10;..."></textarea>
 
-<textarea id="steps" placeholder="Checklist mỗi dòng 1 bước"></textarea>
+    <div class="field-label">Vật tư (mỗi dòng 1 item)</div>
+    <textarea id="fMaterials" placeholder="Ốc M6 x4&#10;Dầu thủy lực 1L&#10;..."></textarea>
 
-<textarea id="materials" placeholder="Vật tư"></textarea>
+    <div class="field-label">Tools (mỗi dòng 1 item)</div>
+    <textarea id="fTools" placeholder="Torque wrench&#10;Multimeter&#10;..."></textarea>
 
-<textarea id="tools" placeholder="Tools"></textarea>
+    <div class="field-label">Ảnh đính kèm</div>
+    <label class="file-label" for="photoInput">📷  Chụp hoặc chọn ảnh</label>
+    <input type="file" id="photoInput" accept="image/*" capture="environment" multiple>
+    <div id="photos"></div>
 
-<input type="file" accept="image/*" capture="environment" id="photo">
-
-<div id="photos"></div>
-
-<button onclick="saveTask()">Lưu task</button>
-
-</div>
+    <button class="btn-save" onclick="saveTask()">💾  Lưu task</button>
+    <button class="btn-back-editor" onclick="goBackFromEditor()">← Quay lại</button>
+  </div>
 
 </div>
 
 <script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+let tasks = JSON.parse(localStorage.getItem("mx_tasks") || "[]");
+let prepState = JSON.parse(localStorage.getItem("mx_prep") || "{}");
+let sectionOpenState = JSON.parse(localStorage.getItem("mx_section_open") || "{}");
 
-let tasks=JSON.parse(localStorage.getItem("mx_tasks")||"[]")
+function saveDB(){ localStorage.setItem("mx_tasks", JSON.stringify(tasks)); }
+function savePrepDB(){ localStorage.setItem("mx_prep", JSON.stringify(prepState)); }
+function saveSectionState(){ localStorage.setItem("mx_section_open", JSON.stringify(sectionOpenState)); }
 
-let current=null
+// ─── NAVIGATION HISTORY ───────────────────────────────────────────────────────
+// pages: {view:'list'} | {view:'detail', taskIndex:number} | {view:'editor', taskIndex:number|null}
+let navHistory = [{view:'list'}];
+let navPos = 0;
 
-function saveDB(){
-localStorage.setItem("mx_tasks",JSON.stringify(tasks))
+function pushNav(page){
+  navHistory = navHistory.slice(0, navPos + 1);
+  navHistory.push(page);
+  navPos = navHistory.length - 1;
+  updateNavBtns();
 }
 
-function toggleCheck(taskIndex,stepIndex,val){
-
-if(!tasks[taskIndex].stepsDone){
-tasks[taskIndex].stepsDone=[]
+function historyBack(){
+  if(navPos <= 0) return;
+  navPos--;
+  applyNav(navHistory[navPos]);
+  updateNavBtns();
+}
+function historyFwd(){
+  if(navPos >= navHistory.length - 1) return;
+  navPos++;
+  applyNav(navHistory[navPos]);
+  updateNavBtns();
+}
+function updateNavBtns(){
+  document.getElementById("btnBack").disabled = navPos <= 0;
+  document.getElementById("btnFwd").disabled  = navPos >= navHistory.length - 1;
 }
 
-tasks[taskIndex].stepsDone[stepIndex]=val
-
-saveDB()
-
-render()
-
+function applyNav(page){
+  if(page.view === 'list'){
+    showListView();
+  } else if(page.view === 'detail'){
+    showDetailView(page.taskIndex);
+  } else if(page.view === 'editor'){
+    showEditorView(page.taskIndex);
+  }
 }
 
-function render(){
-
-const search=document.getElementById("search")
-const list=document.getElementById("list")
-const editor=document.getElementById("editor")
-
-const q=search.value.toLowerCase()
-
-list.innerHTML=""
-
-const filtered=tasks.filter(t=>
-(t.name||"").toLowerCase().includes(q) ||
-(t.aircraft||"").toLowerCase().includes(q)
-)
-
-filtered.forEach((t,i)=>{
-
-const div=document.createElement("div")
-
-div.className="card"
-
-const done=t.stepsDone||[]
-
-const total=t.steps.length
-
-const checked=done.filter(Boolean).length
-
-const checklist=t.steps.map((s,idx)=>`
-<label style="display:flex;gap:10px;margin-top:10px">
-<input type="checkbox"
-${done[idx]?"checked":""}
-onchange="toggleCheck(${i},${idx},this.checked)">
-<span>${s}</span>
-</label>
-`).join("")
-
-div.innerHTML=`
-
-<h3>${t.name}</h3>
-
-<div class="small">${t.aircraft||""}</div>
-
-<div class="small">
-${checked}/${total} checklist
-</div>
-
-${checklist}
-
-<button
-style="margin-top:12px"
-onclick="event.stopPropagation();openTask(${i})">
-✏️ Edit
-</button>
-
-`
-
-list.appendChild(div)
-
-})
-
+// ─── VIEW SWITCHING ───────────────────────────────────────────────────────────
+function showListView(){
+  document.getElementById("listView").style.display = "block";
+  document.getElementById("detailView").style.display = "none";
+  document.getElementById("editor").style.display = "none";
+  document.getElementById("searchWrap").style.display = "block";
+  document.getElementById("btnAddTask").style.display = "";
+  renderList();
 }
 
-function newTask(){
-
-current=null
-
-document.getElementById("editor").classList.remove("hidden")
-
-document.getElementById("search").style.display="none"
-document.getElementById("list").style.display="none"
-
-document.getElementById("name").value=""
-document.getElementById("aircraft").value=""
-document.getElementById("steps").value=""
-document.getElementById("materials").value=""
-document.getElementById("tools").value=""
-document.getElementById("photos").innerHTML=""
-
+function showDetailView(taskIndex){
+  document.getElementById("listView").style.display = "none";
+  document.getElementById("detailView").style.display = "block";
+  document.getElementById("editor").style.display = "none";
+  document.getElementById("searchWrap").style.display = "none";
+  document.getElementById("btnAddTask").style.display = "";
+  if(taskIndex === undefined || taskIndex === null || !tasks[taskIndex]){
+    // fallback
+    goList();
+    return;
+  }
+  renderDetail(taskIndex);
 }
 
-function openTask(i){
-
-current=i
-
-const t=tasks[i]
-
-document.getElementById("editor").classList.remove("hidden")
-
-document.getElementById("search").style.display="none"
-document.getElementById("list").style.display="none"
-
-document.getElementById("name").value=t.name
-document.getElementById("aircraft").value=t.aircraft
-document.getElementById("steps").value=t.steps.join("\n")
-document.getElementById("materials").value=t.materials.join("\n")
-document.getElementById("tools").value=t.tools.join("\n")
-
-renderPhotos(t.photos||[])
-
+function showEditorView(taskIndex){
+  document.getElementById("listView").style.display = "none";
+  document.getElementById("detailView").style.display = "none";
+  document.getElementById("editor").style.display = "block";
+  document.getElementById("searchWrap").style.display = "none";
+  document.getElementById("btnAddTask").style.display = "none";
+  loadEditor(taskIndex);
 }
 
-function renderPhotos(arr){
-
-const p=document.getElementById("photos")
-
-p.innerHTML=""
-
-arr.forEach(src=>{
-
-const img=document.createElement("img")
-
-img.src=src
-
-img.className="photo"
-
-p.appendChild(img)
-
-})
-
+// ─── NAVIGATION ACTIONS ──────────────────────────────────────────────────────
+function goList(){
+  pushNav({view:'list'});
+  showListView();
+}
+function goNewTask(){
+  pushNav({view:'editor', taskIndex: null});
+  showEditorView(null);
+}
+function goDetail(taskIndex){
+  pushNav({view:'detail', taskIndex: taskIndex});
+  showDetailView(taskIndex);
+}
+function goEditFromDetail(taskIndex){
+  pushNav({view:'editor', taskIndex: taskIndex});
+  showEditorView(taskIndex);
+}
+function goBackFromEditor(){
+  // go back in history (should be detail or list)
+  historyBack();
 }
 
-document.getElementById("photo").addEventListener("change",e=>{
+// ─── LIST RENDER (gọn) ───────────────────────────────────────────────────────
+function renderList(){
+  const q = (document.getElementById("search").value||"").toLowerCase();
+  const list = document.getElementById("list");
+  list.innerHTML = "";
 
-const file=e.target.files[0]
+  const filtered = tasks.map((t,i)=>({t,i})).filter(({t}) =>
+    (t.name||"").toLowerCase().includes(q) ||
+    (t.aircraft||"").toLowerCase().includes(q)
+  );
 
-if(!file)return
+  if(!filtered.length){
+    list.innerHTML = '<div class="empty">Không có task nào</div>';
+    return;
+  }
 
-const reader=new FileReader()
+  filtered.forEach(({t, i}) => {
+    const done  = t.stepsDone || [];
+    const total = (t.steps||[]).length;
+    const checked = done.filter(Boolean).length;
+    const pct = total ? Math.round(checked/total*100) : 0;
 
-reader.onload=()=>{
+    let badgeClass = 'badge-empty', badgeText = '0%';
+    if(total){
+      badgeText = pct + '%';
+      badgeClass = pct === 100 ? 'badge-done' : pct > 0 ? 'badge-partial' : 'badge-empty';
+    }
 
-const img=reader.result
-
-const box=document.getElementById("photos")
-
-const im=document.createElement("img")
-
-im.src=img
-
-im.className="photo"
-
-box.appendChild(im)
-
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <div class="card-info" onclick="event.stopPropagation();goDetail(${i})">
+        <div class="card-title">${escHtml(t.name||'(chưa đặt tên)')}</div>
+        <div class="card-sub">${escHtml(t.aircraft||'')}</div>
+      </div>
+      <span class="card-badge ${badgeClass}">${badgeText}</span>
+      <button class="btn-edit-sm" onclick="event.stopPropagation();goEditFromList(${i})">✏️</button>
+    `;
+    list.appendChild(div);
+  });
 }
 
-reader.readAsDataURL(file)
+function goEditFromList(taskIndex){
+  pushNav({view:'editor', taskIndex: taskIndex});
+  showEditorView(taskIndex);
+}
 
-})
+// ─── DETAIL RENDER ───────────────────────────────────────────────────────────
+function renderDetail(taskIndex){
+  const t = tasks[taskIndex];
+  if(!t) return;
+  const container = document.getElementById("detailContent");
+  const done  = t.stepsDone || [];
+  const total = (t.steps||[]).length;
+  const checked = done.filter(Boolean).length;
+  const pct = total ? Math.round(checked/total*100) : 0;
+
+  let badgeClass = 'badge-empty', badgeText = '0%';
+  if(total){
+    badgeText = pct + '%';
+    badgeClass = pct === 100 ? 'badge-done' : pct > 0 ? 'badge-partial' : 'badge-empty';
+  }
+
+  // checklist steps
+  const checklist = (t.steps||[]).map((s,idx) => `
+    <div class="checklist-item">
+      <input type="checkbox" ${done[idx]?'checked':''}
+        onchange="toggleStep(${taskIndex},${idx},this.checked)">
+      <span class="${done[idx]?'checked-text':''}">${escHtml(s)}</span>
+    </div>
+  `).join('');
+
+  // materials section
+  const mats = t.materials||[];
+  const matDone = getPrepDone(taskIndex,'materials',mats.length);
+  const matOpen = isSectionOpen(taskIndex,'materials');
+  const matRows = mats.map((m,idx) => `
+    <div class="prep-item">
+      <input type="checkbox" ${isPrepChecked(taskIndex,'materials',idx)?'checked':''}
+        onchange="togglePrep(${taskIndex},'materials',${idx},this.checked);event.stopPropagation();">
+      <span style="${isPrepChecked(taskIndex,'materials',idx)?'text-decoration:line-through;color:var(--muted)':''}">${escHtml(m)}</span>
+    </div>
+  `).join('');
+  const matSection = mats.length ? `
+    <div class="section-toggle">
+      <div class="section-toggle-header${matOpen?' open':''}" onclick="toggleSection('materials',${taskIndex})">
+        📦 Vật tư &nbsp;<span style="color:var(--green);font-size:11px;">${matDone}/${mats.length}</span>
+        <span class="section-toggle-arrow">▾</span>
+      </div>
+      <div class="section-toggle-body${matOpen?' open':''}">${matRows}</div>
+    </div>` : '';
+
+  // tools section
+  const tools = t.tools||[];
+  const toolDone = getPrepDone(taskIndex,'tools',tools.length);
+  const toolOpen = isSectionOpen(taskIndex,'tools');
+  const toolRows = tools.map((m,idx) => `
+    <div class="prep-item">
+      <input type="checkbox" ${isPrepChecked(taskIndex,'tools',idx)?'checked':''}
+        onchange="togglePrep(${taskIndex},'tools',${idx},this.checked);event.stopPropagation();">
+      <span style="${isPrepChecked(taskIndex,'tools',idx)?'text-decoration:line-through;color:var(--muted)':''}">${escHtml(m)}</span>
+    </div>
+  `).join('');
+  const toolSection = tools.length ? `
+    <div class="section-toggle">
+      <div class="section-toggle-header${toolOpen?' open':''}" onclick="toggleSection('tools',${taskIndex})">
+        🔧 Tools &nbsp;<span style="color:var(--accent2);font-size:11px;">${toolDone}/${tools.length}</span>
+        <span class="section-toggle-arrow">▾</span>
+      </div>
+      <div class="section-toggle-body${toolOpen?' open':''}">${toolRows}</div>
+    </div>` : '';
+
+  // photos
+  const photosHtml = (t.photos||[]).length ? `
+    <div class="detail-photos">
+      ${(t.photos||[]).map(src => `<img src="${src}" onclick="viewPhoto('${src}')" loading="lazy">`).join('')}
+    </div>` : '';
+
+  container.innerHTML = `
+    <div class="detail-header">
+      <div style="flex:1;min-width:0;">
+        <div class="detail-title">${escHtml(t.name||'(chưa đặt tên)')}</div>
+        <div class="detail-sub">${escHtml(t.aircraft||'')}</div>
+      </div>
+      <span class="card-badge ${badgeClass}" style="flex-shrink:0;">${badgeText}</span>
+    </div>
+    ${total ? `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>` : ''}
+    ${checklist}
+    ${matSection}
+    ${toolSection}
+    ${photosHtml}
+    <div class="detail-actions">
+      <button class="btn-edit-big" onclick="goEditFromDetail(${taskIndex})">✏️  Chỉnh sửa</button>
+      <button class="btn-back-detail" onclick="goList()">← Quay lại danh sách</button>
+    </div>
+  `;
+}
+
+function viewPhoto(src){
+  // simple fullscreen preview
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:999;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+  overlay.onclick = () => overlay.remove();
+  const img = document.createElement('img');
+  img.src = src;
+  img.style.cssText = 'max-width:95vw;max-height:95vh;border-radius:8px;object-fit:contain;';
+  overlay.appendChild(img);
+  document.body.appendChild(overlay);
+}
+
+// ─── SECTION TOGGLE ──────────────────────────────────────────────────────────
+function isSectionOpen(taskIndex, type){
+  const key = String(taskIndex);
+  return !!(sectionOpenState[key] && sectionOpenState[key][type]);
+}
+function toggleSection(type, taskIndex){
+  const key = String(taskIndex);
+  if(!sectionOpenState[key]) sectionOpenState[key] = {};
+  sectionOpenState[key][type] = !sectionOpenState[key][type];
+  saveSectionState();
+  renderDetail(taskIndex);
+}
+
+// ─── CHECKLIST TOGGLE ─────────────────────────────────────────────────────────
+function toggleStep(taskIndex, stepIndex, val){
+  if(!tasks[taskIndex].stepsDone) tasks[taskIndex].stepsDone = [];
+  tasks[taskIndex].stepsDone[stepIndex] = val;
+  saveDB();
+  renderDetail(taskIndex);
+  // also update list in background if visible, but we re-render list on show
+}
+
+// ─── PREP STATE ───────────────────────────────────────────────────────────────
+function togglePrep(taskIndex, type, idx, val){
+  const key = String(taskIndex);
+  if(!prepState[key]) prepState[key] = {};
+  if(!prepState[key][type]) prepState[key][type] = {};
+  prepState[key][type][idx] = val;
+  savePrepDB();
+  renderDetail(taskIndex);
+}
+
+function getPrepDone(taskIndex, type, total){
+  const key = String(taskIndex);
+  if(!prepState[key] || !prepState[key][type]) return 0;
+  let count = 0;
+  for(let i=0;i<total;i++) if(prepState[key][type][i]) count++;
+  return count;
+}
+function isPrepChecked(taskIndex, type, idx){
+  const key = String(taskIndex);
+  return !!(prepState[key] && prepState[key][type] && prepState[key][type][idx]);
+}
+
+// ─── EDITOR ───────────────────────────────────────────────────────────────────
+let currentEdit = null;
+
+function loadEditor(taskIndex){
+  currentEdit = taskIndex;
+  document.getElementById("photos").innerHTML = "";
+
+  if(taskIndex === null){
+    document.getElementById("fName").value = "";
+    document.getElementById("fAircraft").value = "";
+    document.getElementById("fSteps").value = "";
+    document.getElementById("fMaterials").value = "";
+    document.getElementById("fTools").value = "";
+  } else {
+    const t = tasks[taskIndex];
+    document.getElementById("fName").value     = t.name || "";
+    document.getElementById("fAircraft").value = t.aircraft || "";
+    document.getElementById("fSteps").value    = (t.steps||[]).join("\n");
+    document.getElementById("fMaterials").value = (t.materials||[]).join("\n");
+    document.getElementById("fTools").value    = (t.tools||[]).join("\n");
+    (t.photos||[]).forEach(src => addPhotoPreview(src));
+  }
+}
 
 function saveTask(){
+  const photos = [...document.querySelectorAll("#photos img")].map(i => i.src);
+  const obj = {
+    name:      document.getElementById("fName").value.trim(),
+    aircraft:  document.getElementById("fAircraft").value.trim(),
+    steps:     document.getElementById("fSteps").value.split("\n").filter(Boolean),
+    materials: document.getElementById("fMaterials").value.split("\n").filter(Boolean),
+    tools:     document.getElementById("fTools").value.split("\n").filter(Boolean),
+    photos,
+    stepsDone: currentEdit !== null && tasks[currentEdit] && tasks[currentEdit].stepsDone
+               ? tasks[currentEdit].stepsDone : [],
+    createdAt: currentEdit !== null && tasks[currentEdit] && tasks[currentEdit].createdAt
+               ? tasks[currentEdit].createdAt : Date.now(),
+  };
 
-const photos=[...document.querySelectorAll(".photo")].map(i=>i.src)
+  if(!obj.name){ alert("Nhập tên task đã nha"); return; }
 
-const obj={
+  if(currentEdit === null){
+    tasks.unshift(obj);
+  } else {
+    tasks[currentEdit] = obj;
+  }
 
-name:document.getElementById("name").value,
+  saveDB();
 
-aircraft:document.getElementById("aircraft").value,
-
-steps:document.getElementById("steps").value.split("\n").filter(Boolean),
-
-materials:document.getElementById("materials").value.split("\n").filter(Boolean),
-
-tools:document.getElementById("tools").value.split("\n").filter(Boolean),
-
-photos,
-
-stepsDone:
-current!==null && tasks[current].stepsDone
-? tasks[current].stepsDone
-: []
-
+  // after save, go back in history (to detail or list)
+  // if we came from detail, go back to detail; if from list, go to list
+  // but simpler: pop the editor page and go to the previous page, but refresh it
+  if(navHistory.length >= 2 && navHistory[navPos - 1] && navHistory[navPos - 1].view === 'detail'){
+    // go back to detail, but need to know the taskIndex
+    const prevPage = navHistory[navPos - 1];
+    // remove editor from history
+    navHistory = navHistory.slice(0, navPos);
+    navPos = navHistory.length - 1;
+    // push updated detail
+    pushNav({view:'detail', taskIndex: prevPage.taskIndex});
+    showDetailView(prevPage.taskIndex);
+  } else {
+    // go to list
+    navHistory = navHistory.slice(0, navPos);
+    navPos = navHistory.length - 1;
+    pushNav({view:'list'});
+    showListView();
+  }
 }
 
-if(current===null){
-tasks.unshift(obj)
-}else{
-tasks[current]=obj
+// ─── PHOTOS ───────────────────────────────────────────────────────────────────
+document.getElementById("photoInput").addEventListener("change", e => {
+  [...e.target.files].forEach(file => {
+    const reader = new FileReader();
+    reader.onload = () => addPhotoPreview(reader.result);
+    reader.readAsDataURL(file);
+  });
+  e.target.value = "";
+});
+
+function addPhotoPreview(src){
+  const img = document.createElement("img");
+  img.src = src;
+  img.style.cssText = "width:100%;border-radius:8px;margin-top:8px;display:block;";
+  document.getElementById("photos").appendChild(img);
 }
 
-saveDB()
+// ─── SWIPE NAVIGATION ─────────────────────────────────────────────────────────
+let touchStartX = 0;
+let touchStartY = 0;
+let swipeActive = false;
 
-document.getElementById("search").style.display="block"
-document.getElementById("list").style.display="block"
-document.getElementById("editor").classList.add("hidden")
+document.addEventListener('touchstart', e => {
+  if(e.touches.length === 1){
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    swipeActive = true;
+  }
+}, {passive: true});
 
-render()
+document.addEventListener('touchmove', e => {
+  if(!swipeActive) return;
+  const dx = e.touches[0].clientX - touchStartX;
+  const dy = e.touches[0].clientY - touchStartY;
+  // if horizontal enough and near edge
+  const absDx = Math.abs(dx);
+  const absDy = Math.abs(dy);
+  if(absDx > absDy && absDx > 10){
+    const hintLeft = document.getElementById('swipeLeft');
+    const hintRight = document.getElementById('swipeRight');
+    if(touchStartX < 50 && dx > 30 && navPos > 0){
+      hintLeft.style.opacity = Math.min((dx-30)/40, 1);
+    } else if(touchStartX > window.innerWidth - 50 && dx < -30 && navPos < navHistory.length - 1){
+      hintRight.style.opacity = Math.min((-dx-30)/40, 1);
+    } else {
+      hintLeft.style.opacity = 0;
+      hintRight.style.opacity = 0;
+    }
+  }
+}, {passive: true});
 
-alert("Đã lưu")
+document.addEventListener('touchend', e => {
+  const hintLeft = document.getElementById('swipeLeft');
+  const hintRight = document.getElementById('swipeRight');
+  hintLeft.style.opacity = 0;
+  hintRight.style.opacity = 0;
 
+  if(!swipeActive) return;
+  swipeActive = false;
+  const dx = (e.changedTouches[0]?.clientX || touchStartX) - touchStartX;
+  const dy = (e.changedTouches[0]?.clientY || touchStartY) - touchStartY;
+  const absDx = Math.abs(dx);
+  const absDy = Math.abs(dy);
+
+  if(absDx > absDy && absDx > 50){
+    if(touchStartX < 60 && dx > 40){
+      // swipe from left edge -> back
+      historyBack();
+    } else if(touchStartX > window.innerWidth - 60 && dx < -40){
+      // swipe from right edge -> forward
+      historyFwd();
+    }
+  }
+});
+
+// ─── ESC HTML ─────────────────────────────────────────────────────────────────
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-render()
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+showListView();
+updateNavBtns();
 
+// Handle initial deep link (if any)
+if(navHistory.length > 0){
+  applyNav(navHistory[navPos]);
+}
 </script>
-
 </body>
 </html>
