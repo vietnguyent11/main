@@ -175,29 +175,6 @@ header{
 .modal-content h3{ margin-bottom:1rem; font-size:1rem; }
 .modal-btn{ width:100%; padding:0.7rem; margin-bottom:0.5rem; background:var(--card); border:1px solid var(--border); color:var(--text); border-radius:0.6rem; font-size:0.85rem; cursor:pointer; transition:.15s; }
 .modal-btn:hover{ border-color:var(--accent); }
-/* ── Photo Overlay (zoom mượt như Safari) ── */
-.photo-overlay{
-  position:fixed; inset:0; background:rgba(0,0,0,0.95);
-  z-index:999; display:flex; align-items:center; justify-content:center;
-  -webkit-overflow-scrolling: touch;
-}
-.photo-overlay .close-btn{
-  position:absolute; top:12px; right:12px;
-  width:40px; height:40px; background:var(--red); color:#fff;
-  border:none; border-radius:50%; font-size:24px; line-height:1;
-  cursor:pointer; display:flex; align-items:center; justify-content:center;
-  z-index:10;
-}
-.photo-overlay .img-scroll{
-  width:100vw; height:100vh;
-  overflow:auto; -webkit-overflow-scrolling:touch;
-  display:flex; align-items:center; justify-content:center;
-}
-.photo-overlay img{
-  max-width: none; /* cho phép ảnh giữ kích thước thật */
-  height: auto;
-  /* Ảnh sẽ tự nhiên được zoom bằng pinch */
-}
 </style>
 </head>
 <body>
@@ -501,7 +478,7 @@ function renderDetail(taskId){
       <div class="section-toggle-body${toolOpen?' open':''}">${toolRows}</div>
     </div>` : '';
 
-  const photosHtml = t.photos.length ? `<div class="detail-photos">${t.photos.map(src => `<img src="${src}" onclick="viewPhoto('${src}')" loading="lazy">`).join('')}</div>` : '';
+  const photosHtml = t.photos.length ? `<div class="detail-photos">${t.photos.map(src => `<img src="${src}" onclick="openPhoto('${src}')" loading="lazy">`).join('')}</div>` : '';
 
   container.innerHTML = `
     <div class="detail-header">
@@ -522,35 +499,9 @@ function renderDetail(taskId){
     </div>`;
 }
 
-function viewPhoto(src){
-  // Xóa overlay cũ nếu có
-  const existing = document.querySelector('.photo-overlay');
-  if(existing) existing.remove();
-
-  const overlay = document.createElement('div');
-  overlay.className = 'photo-overlay';
-
-  const closeBtn = document.createElement('button');
-  closeBtn.className = 'close-btn';
-  closeBtn.innerHTML = '✕';
-  closeBtn.onclick = () => overlay.remove();
-
-  const scrollDiv = document.createElement('div');
-  scrollDiv.className = 'img-scroll';
-
-  const img = document.createElement('img');
-  img.src = src;
-  scrollDiv.appendChild(img);
-
-  overlay.appendChild(closeBtn);
-  overlay.appendChild(scrollDiv);
-
-  // Chạm vào nền đen để đóng (không phải scrollDiv)
-  overlay.addEventListener('click', (e) => {
-    if(e.target === overlay) overlay.remove();
-  });
-
-  document.body.appendChild(overlay);
+// Mở ảnh trong tab mới để pinch‑to‑zoom mượt như Safari
+function openPhoto(src){
+  window.open(src, '_blank');
 }
 
 function toggleSection(taskId, type){
