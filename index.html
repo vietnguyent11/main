@@ -32,7 +32,6 @@ body{
   -webkit-tap-highlight-color:transparent;
   user-select:none; -webkit-user-select:none;
   overscroll-behavior:contain;
-  /* Bỏ touch-action để pinch-to-zoom hoạt động */
 }
 /* ── HEADER ── */
 header{
@@ -175,11 +174,10 @@ header{
 .modal-content h3{ margin-bottom:1rem; font-size:1rem; }
 .modal-btn{ width:100%; padding:0.7rem; margin-bottom:0.5rem; background:var(--card); border:1px solid var(--border); color:var(--text); border-radius:0.6rem; font-size:0.85rem; cursor:pointer; transition:.15s; }
 .modal-btn:hover{ border-color:var(--accent); }
-/* ── Photo Overlay (pinch‑to‑zoom mượt) ── */
+/* ── Photo Overlay ── */
 .photo-overlay{
   position:fixed; inset:0; background:rgba(0,0,0,0.95);
   z-index:999; display:flex; align-items:center; justify-content:center;
-  /* Cho phép pinch zoom tự nhiên của Safari */
 }
 .photo-overlay .close-btn{
   position:absolute; top:12px; right:12px;
@@ -193,7 +191,6 @@ header{
   max-height:95vh;
   object-fit:contain;
   border-radius:0.5rem;
-  /* Ảnh không tự phóng to, luôn vừa khung */
 }
 </style>
 </head>
@@ -223,17 +220,17 @@ header{
   <div id="detailView" style="display:none;"><div id="detailContent"></div></div>
   <div id="editor">
     <div class="field-label">Tên task</div>
-    <input type="text" id="fName" placeholder="VD: Thay lốp bánh trước">
+    <input type="text" id="fName" placeholder="VD: Thay lốp bánh trước" oninput="scheduleDraftSave()">
     <div class="field-label">Aircraft / Số hiệu</div>
-    <input type="text" id="fAircraft" placeholder="VD: VN-A123">
+    <input type="text" id="fAircraft" placeholder="VD: VN-A123" oninput="scheduleDraftSave()">
     <div class="field-label">AMM Ref</div>
-    <input type="text" id="fAmm" placeholder="VD: AMM 32-41-11">
+    <input type="text" id="fAmm" placeholder="VD: AMM 32-41-11" oninput="scheduleDraftSave()">
     <div class="field-label">Checklist (Enter để thêm bước mới & tự đánh số)</div>
-    <textarea id="fSteps" placeholder="Bắt đầu gõ bước đầu tiên..."></textarea>
+    <textarea id="fSteps" placeholder="Bắt đầu gõ bước đầu tiên..." oninput="scheduleDraftSave()"></textarea>
     <div class="field-label">Vật tư, hóa chất (Enter để thêm item mới & tự đánh số)</div>
-    <textarea id="fMaterials" placeholder="Ốc M6 x4..."></textarea>
+    <textarea id="fMaterials" placeholder="Ốc M6 x4..." oninput="scheduleDraftSave()"></textarea>
     <div class="field-label">Tools (Enter để thêm item mới & tự đánh số)</div>
-    <textarea id="fTools" placeholder="Torque wrench..."></textarea>
+    <textarea id="fTools" placeholder="Torque wrench..." oninput="scheduleDraftSave()"></textarea>
     <div class="field-label">Ảnh đính kèm</div>
     <label class="file-label" for="photoInput">📷  Chụp hoặc chọn ảnh</label>
     <input type="file" id="photoInput" accept="image/*" capture="environment" multiple>
@@ -341,6 +338,43 @@ function showToast(msg, dur=2000){
   t._timeout = setTimeout(() => t.classList.remove('show'), dur);
 }
 
+// ─── DRAFT AUTO-SAVE ────────────────────────────────────────────
+const DRAFT_PREFIX = 'mx_draft_';
+let draftSaveTimeout = null;
+
+function getDraftKey(taskId) {
+  return DRAFT_PREFIX + (taskId || 'new');
+}
+
+function saveDraft(taskId) {
+  try {
+    const data = getEditorData();
+    localStorage.setItem(getDraftKey(taskId), JSON.stringify(data));
+  } catch(e) {}
+}
+
+function loadDraft(taskId) {
+  const key = getDraftKey(taskId);
+  const raw = localStorage.getItem(key);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch(e) { return null; }
+}
+
+function clearDraft(taskId) {
+  localStorage.removeItem(getDraftKey(taskId));
+}
+
+function scheduleDraftSave() {
+  if (draftSaveTimeout) clearTimeout(draftSaveTimeout);
+  draftSaveTimeout = setTimeout(() => {
+    if (currentEditId !== undefined) {
+      saveDraft(currentEditId);
+    }
+  }, 1000); // 1 giây debounce
+}
+
 // ─── NAVIGATION ────────────────────────────────────────────────
 let navHistory = [{view:'list'}];
 let navPos = 0;
@@ -406,7 +440,11 @@ function showEditorView(taskId){
   loadEditor(taskId);
 }
 function goList(){ pushNav({view:'list'}); showListView(); }
-function goNewTask(){ pushNav({view:'editor', taskId: null}); showEditorView(null); }
+function goNewTask(){
+  // Xóa draft cũ của new nếu có thể (sẽ hỏi trong loadEditor)
+  pushNav({view:'editor', taskId: null});
+  showEditorView(null);
+}
 function goDetail(taskId){ pushNav({view:'detail', taskId}); showDetailView(taskId); }
 function goEditFromDetail(taskId){ pushNav({view:'editor', taskId}); showEditorView(taskId); }
 function goBackFromEditor(){ historyBack(); }
@@ -520,7 +558,6 @@ function renderDetail(taskId){
 }
 
 function viewPhoto(src){
-  // Xóa overlay cũ nếu có
   const existing = document.querySelector('.photo-overlay');
   if(existing) existing.remove();
 
@@ -541,7 +578,6 @@ function viewPhoto(src){
   overlay.appendChild(closeBtn);
   overlay.appendChild(img);
 
-  // Chạm vào nền đen để đóng
   overlay.addEventListener('click', (e) => {
     if(e.target === overlay) overlay.remove();
   });
@@ -611,6 +647,29 @@ let originalTaskData = null;
 function loadEditor(taskId){
   currentEditId = taskId;
   document.getElementById("photos").innerHTML = "";
+
+  // Kiểm tra bản nháp
+  const draft = loadDraft(taskId);
+  if (draft) {
+    const restore = confirm("Có bản nháp chưa lưu. Bạn muốn khôi phục?");
+    if (restore) {
+      // Điền dữ liệu từ draft
+      document.getElementById("fName").value = draft.name || "";
+      document.getElementById("fAircraft").value = draft.aircraft || "";
+      document.getElementById("fAmm").value = draft.ammRef || "";
+      document.getElementById("fSteps").value = draft.steps || "";
+      document.getElementById("fMaterials").value = draft.materials || "";
+      document.getElementById("fTools").value = draft.tools || "";
+      if (draft.photos) draft.photos.forEach(src => addPhotoPreview(src));
+      originalTaskData = draft;
+      autoResizeTextareas();
+      return;
+    } else {
+      clearDraft(taskId);
+    }
+  }
+
+  // Không có draft hoặc không khôi phục -> load từ task
   const t = taskId ? tasks.find(t => t.id === taskId) : null;
   document.getElementById("fName").value = t ? t.name : "";
   document.getElementById("fAircraft").value = t ? t.aircraft : "";
@@ -654,12 +713,19 @@ async function saveTask(){
     createdAt: currentEditId ? (tasks.find(t => t.id === currentEditId)?.createdAt || Date.now()) : Date.now()
   };
   if(!obj.name){ showToast("⚠️ Vui lòng nhập tên task."); return; }
+
   if(currentEditId){
     const idx = tasks.findIndex(t => t.id === currentEditId);
     if(idx !== -1) tasks[idx] = obj;
-  } else { tasks.unshift(obj); }
+  } else {
+    tasks.unshift(obj);
+  }
   if(!(await saveAll())) return;
+
+  // Xóa draft sau khi lưu thành công
+  clearDraft(currentEditId);
   showToast("✅ Đã lưu!");
+
   if(navHistory.length>=2 && navHistory[navPos-1]?.view === 'detail' && navHistory[navPos-1]?.taskId === obj.id){
     navHistory = navHistory.slice(0, navPos); navPos--;
     pushNav({view:'detail', taskId: obj.id});
@@ -704,6 +770,7 @@ document.getElementById("photoInput").addEventListener("change", async e => {
     addPhotoPreview(compressed);
   }
   e.target.value = "";
+  scheduleDraftSave(); // lưu draft sau khi thêm ảnh
   showToast("✅ Đã thêm ảnh");
 });
 
@@ -716,7 +783,11 @@ function addPhotoPreview(src){
   const btn = document.createElement("button");
   btn.className = "photo-remove";
   btn.innerHTML = "✕";
-  btn.onclick = (e) => { e.stopPropagation(); div.remove(); };
+  btn.onclick = (e) => {
+    e.stopPropagation();
+    div.remove();
+    scheduleDraftSave();
+  };
   div.appendChild(img); div.appendChild(btn);
   container.appendChild(div);
 }
@@ -748,6 +819,7 @@ function addPhotoPreview(src){
         textarea.selectionStart = textarea.selectionEnd = offset;
       }
       autoResizeTextareas();
+      scheduleDraftSave();
     }
   });
 });
